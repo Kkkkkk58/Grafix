@@ -1,5 +1,6 @@
 package ru.itmo.grafix;
 
+import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -118,11 +119,10 @@ public class MainSceneController {
         }
     }
 
-    // FIXME: doesn't work after event consuming
     private EventHandler<Event> getTabOnCloseRequestEvent() {
         return event -> {
+            ((Tab)event.getSource()).getTabPane().setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
             Alert alert = new ImageSavingBeforeClosingConfirmationAlert();
-            // TODO add exception
             ButtonType buttonType = alert.showAndWait().orElseThrow();
             if (ButtonType.YES.equals(buttonType)) {
                 if (!saveFileAs()) {
@@ -131,6 +131,7 @@ public class MainSceneController {
             } else if (ButtonType.CANCEL.equals(buttonType)) {
                 event.consume();
             }
+            Platform.runLater(() -> ((Tab)event.getSource()).getTabPane().setTabDragPolicy(TabPane.TabDragPolicy.REORDER));
         };
     }
 }
