@@ -1,8 +1,6 @@
 package ru.itmo.grafix;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +15,14 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             if (count != 2 || (char) format[0] != 'P' || ((char) format[1] != '5' && (char) format[1] != '6')) {
                 throw new RuntimeException("Unsupported image format");
             }
-            int width = Integer.parseInt(readUntilWhitespace(br));
-            int height = Integer.parseInt(readUntilWhitespace(br));
-            int maxVal = Integer.parseInt(readUntilWhitespace(br));
+            int headerSize = 2 + 1;
+            String res = "";
+            int width = Integer.parseInt(res = readUntilWhitespace(br));
+            headerSize += res.length() + 1;
+            int height = Integer.parseInt(res = readUntilWhitespace(br));
+            headerSize += res.length() + 1;
+            int maxVal = Integer.parseInt(res = readUntilWhitespace(br));
+            headerSize += 3 + 1;
             int bufSize = width * height;
             if (format[1] == '6') {
                 bufSize *= 3;
@@ -27,7 +30,25 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
             byte[] buf = new byte[bufSize];
             br.read(buf);
-            return new GrafixImage(new String(format), width, height, maxVal, buf);
+            if(maxVal < 255){
+                double multiplier = 255.0 / maxVal;
+                for(int i = 0; i < bufSize; ++i){
+                    buf[i] *= multiplier;
+                }
+            }
+            return new GrafixImage(new String(format), width, height, 255, buf, absolutePath, headerSize);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public ByteArrayOutputStream write(GrafixImage image) {
+        try (ByteArrayOutputStream stream = new ByteArrayOutputStream(image.getHeaderSize() + image.getData().length + 1)) {
+            String header = image.getFormat() + " " + image.getWidth() + " " + image.getHeight() + " " + image.getMaxVal() + " ";
+            stream.write(header.getBytes());
+            stream.write(image.getData());
+            return stream;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -12,13 +12,17 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class MainSceneController {
     @FXML
     public TabPane tabPane;
-    private ImageProcessorService imageProcessorService;
+    private final ImageProcessorService imageProcessorService;
+    private final Map<String, GrafixImage> tabMapping = new HashMap<>();
 
     public MainSceneController() {
         imageProcessorService = new ImageProcessorServiceImpl();
@@ -29,7 +33,14 @@ public class MainSceneController {
     }
 
     public void saveFile() {
-        // сохранить открытый
+        String activeTab = tabPane.getSelectionModel().getSelectedItem().getId();
+        GrafixImage image = tabMapping.get(activeTab);
+        ByteArrayOutputStream stream = imageProcessorService.write(image);
+        try(OutputStream fileStream = new FileOutputStream(image.getPath())){
+            stream.writeTo(fileStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void saveFileAs() {
@@ -49,6 +60,9 @@ public class MainSceneController {
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         tab.setContent(scrP);
         GrafixImage image = imageProcessorService.open(file.getAbsolutePath());
+        String tabId = UUID.randomUUID().toString();
+        tab.setId(tabId);
+        tabMapping.put(tabId, image);
         if (image.getFormat().charAt(1) == '5') {
             BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
             img.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), image.getData());
