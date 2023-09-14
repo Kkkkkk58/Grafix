@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
 import java.io.IOException;
 
@@ -14,6 +15,7 @@ public class GrafixApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Grafix");
         stage.setScene(scene);
+        Thread.currentThread().setUncaughtExceptionHandler(new GrafixExceptionHandler());
         stage.show();
 
     }
