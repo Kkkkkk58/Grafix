@@ -27,6 +27,12 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
             byte[] buf = new byte[bufSize];
             br.read(buf);
+            if(maxVal < 255){
+                double multiplier = 255.0 / maxVal;
+                for(int i = 0; i < bufSize; ++i){
+                    buf[i] *= multiplier;
+                }
+            }
             return new GrafixImage(new String(format), width, height, maxVal, buf);
         } catch (IOException e) {
             throw new RuntimeException(e);
