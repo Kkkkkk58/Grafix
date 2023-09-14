@@ -6,17 +6,21 @@ public class GrafixImage {
     private int height;
     private int maxVal;
     private byte[] data;
+    private String path;
+    private int headerSize;
 
-    public GrafixImage(String format, int width, int height, int maxVal, byte[] data) {
+    public GrafixImage(String format, int width, int height, int maxVal, byte[] data, String path, int headerSize) {
         this.format = format;
         this.width = width;
         this.height = height;
         this.maxVal = maxVal;
         this.data = data;
+        this.path = path;
+        this.headerSize = headerSize;
     }
 
-    public GrafixImage(String format, int width, int height, int maxVal) {
-        this(format, width, height, maxVal, new byte[width * height]);
+    public GrafixImage(String format, int width, int height, int maxVal, String path, int headerSize) {
+        this(format, width, height, maxVal, new byte[width * height], path, headerSize);
     }
 
     public String getFormat() {
@@ -34,4 +38,9 @@ public class GrafixImage {
     public byte[] getData() {
         return data;
     }
+    public String getPath() {
+        return path;
+    }
+    public int getHeaderSize(){return headerSize;}
+    public int getMaxVal(){return maxVal;}
 }
