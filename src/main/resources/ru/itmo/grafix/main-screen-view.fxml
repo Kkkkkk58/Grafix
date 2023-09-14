@@ -35,5 +35,5 @@
             <MenuItem mnemonicParsing="false" text="About Grafix"/>
         </Menu>
     </MenuBar>
-    <TabPane fx:id="tabPane"/>
+    <TabPane fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER"/>
 </VBox>
