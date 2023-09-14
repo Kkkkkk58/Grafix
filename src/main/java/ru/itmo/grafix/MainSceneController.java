@@ -4,15 +4,12 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -40,17 +37,18 @@ public class MainSceneController {
         doSave(image.getPath(), image);
     }
 
-    public void saveFileAs() {
+    public boolean saveFileAs() {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showSaveDialog(null);
         if (file == null) {
-            return;
+            return false;
         }
 
         GrafixImage image = getActiveTabImage();
         doSave(file.getAbsolutePath(), image);
         closeTab(getActiveTab());
         doOpen(file.getAbsolutePath(), file.getName());
+        return true;
     }
 
     public void openFile() {
@@ -80,6 +78,7 @@ public class MainSceneController {
     private void doOpen(String absolutePath, String fileName) {
         GrafixImage image = imageProcessorService.open(absolutePath);
         Tab tab = new Tab(fileName);
+        tab.setOnCloseRequest(getTabOnCloseRequestEvent());
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
         ScrollPane scrP = new ScrollPane();
@@ -110,7 +109,6 @@ public class MainSceneController {
         return tabPane.getSelectionModel().getSelectedItem();
     }
 
-    // TODO research
     private void closeTab(Tab tab) {
         EventHandler<Event> handler = tab.getOnClosed();
         if (handler != null) {
@@ -118,5 +116,21 @@ public class MainSceneController {
         } else {
             tab.getTabPane().getTabs().remove(tab);
         }
+    }
+
+    // FIXME: doesn't work after event consuming
+    private EventHandler<Event> getTabOnCloseRequestEvent() {
+        return event -> {
+            Alert alert = new ImageSavingBeforeClosingConfirmationAlert();
+            // TODO add exception
+            ButtonType buttonType = alert.showAndWait().orElseThrow();
+            if (ButtonType.YES.equals(buttonType)) {
+                if (!saveFileAs()) {
+                    event.consume();
+                }
+            } else if (ButtonType.CANCEL.equals(buttonType)) {
+                event.consume();
+            }
+        };
     }
 }
