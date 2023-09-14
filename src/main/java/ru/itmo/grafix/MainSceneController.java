@@ -1,6 +1,8 @@
 package ru.itmo.grafix;
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
@@ -33,18 +35,21 @@ public class MainSceneController {
     }
 
     public void saveFile() {
-        String activeTab = tabPane.getSelectionModel().getSelectedItem().getId();
-        GrafixImage image = tabMapping.get(activeTab);
-        ByteArrayOutputStream stream = imageProcessorService.write(image);
-        try(OutputStream fileStream = new FileOutputStream(image.getPath())){
-            stream.writeTo(fileStream);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        GrafixImage image = getActiveTabImage();
+        doSave(image.getPath(), image);
     }
 
     public void saveFileAs() {
+        FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showSaveDialog(null);
+        if (file == null) {
+            return;
+        }
 
+        GrafixImage image = getActiveTabImage();
+        doSave(file.getAbsolutePath(), image);
+        closeTab(getActiveTab());
+        doOpen(file.getAbsolutePath(), file.getName());
     }
 
     public void openFile() {
@@ -53,13 +58,32 @@ public class MainSceneController {
         if (file == null) {
             return;
         }
-        Tab tab = new Tab(file.getName());
+
+        doOpen(file.getAbsolutePath(), file.getName());
+    }
+
+    private GrafixImage getActiveTabImage() {
+        String activeTabId = getActiveTab().getId();
+        return tabMapping.get(activeTabId);
+    }
+
+    private void doSave(String absolutePath, GrafixImage image) {
+        ByteArrayOutputStream stream = imageProcessorService.write(image);
+        try(OutputStream fileStream = new FileOutputStream(absolutePath)){
+            stream.writeTo(fileStream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void doOpen(String absolutePath, String fileName) {
+        Tab tab = new Tab(fileName);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
         ScrollPane scrP = new ScrollPane();
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         tab.setContent(scrP);
-        GrafixImage image = imageProcessorService.open(file.getAbsolutePath());
+        GrafixImage image = imageProcessorService.open(absolutePath);
         String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
         tabMapping.put(tabId, image);
@@ -78,6 +102,20 @@ public class MainSceneController {
             int mult = 3;
             writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, image.getData(), 0, image.getWidth() * mult);
             scrP.setContent(imageView);
+        }
+    }
+
+    private Tab getActiveTab() {
+        return tabPane.getSelectionModel().getSelectedItem();
+    }
+
+    // TODO research
+    private void closeTab(Tab tab) {
+        EventHandler<Event> handler = tab.getOnClosed();
+        if (handler != null) {
+            handler.handle(null);
+        } else {
+            tab.getTabPane().getTabs().remove(tab);
         }
     }
 }
