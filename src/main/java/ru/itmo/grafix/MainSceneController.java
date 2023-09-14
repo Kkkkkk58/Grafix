@@ -34,11 +34,17 @@ public class MainSceneController {
     }
 
     public void saveFile() {
+        if (getActiveTab() == null) {
+            return;
+        }
         GrafixImage image = getActiveTabImage();
         doSave(image.getPath(), image);
     }
 
     public boolean saveFileAs() {
+        if (getActiveTab() == null) {
+            return false;
+        }
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showSaveDialog(null);
         if (file == null) {
