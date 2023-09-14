@@ -1,6 +1,8 @@
 package ru.itmo.grafix.exception;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.stage.Stage;
 
 import java.lang.reflect.InvocationTargetException;
 
@@ -13,8 +15,7 @@ public class GrafixExceptionHandler implements Thread.UncaughtExceptionHandler {
             }
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
-            alert.setHeaderText("Exception Occurred");
-            alert.setContentText("An unexpected error occurred:\n" + rootException.getMessage());
+            alert.setContentText(rootException.getMessage());
             alert.showAndWait();
     }
 }
