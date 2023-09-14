@@ -4,7 +4,6 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.ImageView;
@@ -12,7 +11,6 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -82,10 +80,10 @@ public class MainSceneController {
         Tab tab = new Tab(fileName);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
-        ScrollPane scrP = new ScrollPane();
+        String tabId = UUID.randomUUID().toString();
+        ZoomableScrollPane scrP = new ZoomableScrollPane();
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         tab.setContent(scrP);
-        String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
         tabMapping.put(tabId, image);
         if (image.getFormat().charAt(1) == '5') {
@@ -94,7 +92,7 @@ public class MainSceneController {
             WritableImage img2 = new WritableImage(image.getWidth(), image.getHeight());
             SwingFXUtils.toFXImage(img, img2);
             ImageView imageView = new ImageView(img2);
-            scrP.setContent(imageView);
+            scrP.setTarget(imageView);
         } else {
             WritableImage img = new WritableImage(image.getWidth(), image.getHeight());
             PixelWriter writer = img.getPixelWriter();
@@ -102,8 +100,9 @@ public class MainSceneController {
             PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
             int mult = 3;
             writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, image.getData(), 0, image.getWidth() * mult);
-            scrP.setContent(imageView);
+            scrP.setTarget(imageView);
         }
+
     }
 
     private Tab getActiveTab() {
