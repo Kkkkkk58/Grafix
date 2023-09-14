@@ -16,8 +16,6 @@ public class GrafixApplication extends Application {
         stage.setTitle("Grafix");
         stage.setScene(scene);
         Thread.currentThread().setUncaughtExceptionHandler(new GrafixExceptionHandler());
-        MainSceneController controller = fxmlLoader.getController();
-        ShortcutRegisterService.registerShortcuts(scene, controller);
         stage.show();
     }
 
