@@ -1,5 +1,9 @@
 package ru.itmo.grafix;
 
+import ru.itmo.grafix.exception.ByteReaderException;
+import ru.itmo.grafix.exception.ByteWriterException;
+import ru.itmo.grafix.exception.UnsupportedImageFormatException;
+
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +17,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             byte[] format = new byte[2];
             int count = br.read(format);
             if (count != 2 || (char) format[0] != 'P' || ((char) format[1] != '5' && (char) format[1] != '6')) {
-                throw new RuntimeException("Unsupported image format");
+                throw new UnsupportedImageFormatException();
             }
             int headerSize = 2 + 1;
             String res = "";
@@ -30,15 +34,16 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
             byte[] buf = new byte[bufSize];
             br.read(buf);
-            if(maxVal < 255){
+            if (maxVal < 255) {
                 double multiplier = 255.0 / maxVal;
-                for(int i = 0; i < bufSize; ++i){
+                for (int i = 0; i < bufSize; ++i) {
                     buf[i] *= multiplier;
                 }
             }
             return new GrafixImage(new String(format), width, height, 255, buf, absolutePath, headerSize);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        }
+        catch (IOException inputException) {
+            throw new ByteReaderException();
         }
     }
 
@@ -49,8 +54,8 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             stream.write(header.getBytes());
             stream.write(image.getData());
             return stream;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException outputException) {
+            throw new ByteWriterException();
         }
     }
 

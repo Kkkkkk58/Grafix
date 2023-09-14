@@ -12,6 +12,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -77,13 +78,13 @@ public class MainSceneController {
     }
 
     private void doOpen(String absolutePath, String fileName) {
+        GrafixImage image = imageProcessorService.open(absolutePath);
         Tab tab = new Tab(fileName);
         tabPane.getTabs().add(tab);
         tabPane.getSelectionModel().select(tab);
         ScrollPane scrP = new ScrollPane();
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         tab.setContent(scrP);
-        GrafixImage image = imageProcessorService.open(absolutePath);
         String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
         tabMapping.put(tabId, image);
