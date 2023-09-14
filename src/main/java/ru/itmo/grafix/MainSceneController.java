@@ -56,40 +56,14 @@ public class MainSceneController {
             SwingFXUtils.toFXImage(img, img2);
             ImageView imageView = new ImageView(img2);
             scrP.setContent(imageView);
-            //tab.setContent(imageView);
         } else {
-//        var canvas = new Canvas(image.getWidth(), image.getHeight());
-//        tab.setContent(canvas);
-            //final PixelWriter writer = canvas.getGraphicsContext2D().getPixelWriter();
-
             WritableImage img = new WritableImage(image.getWidth(), image.getHeight());
             PixelWriter writer = img.getPixelWriter();
             ImageView imageView = new ImageView(img);
-            //tab.setContent(imageView);
-            int pos = 0;
             PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
             int mult = 3;
             writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, image.getData(), 0, image.getWidth() * mult);
             scrP.setContent(imageView);
         }
-
-//        for (int y = 0; y < image.getHeight(); y++) {
-//            for (int x = 0; x < image.getWidth(); x++) {
-//                if (Objects.equals(image.getFormat(), "P6")) {
-//                    writer.setColor(x, y, javafx.scene.paint.Color.rgb(image.getData()[pos] & 0xFF, image.getData()[pos + 1] & 0xFF, image.getData()[pos + 2] & 0xFF));
-//                    pos += 3;
-//                } else{
-//                    writer.setColor(x, y, javafx.scene.paint.Color.grayRgb(image.getData()[pos] & 0xFF));
-//                    pos += 1;
-//                }
-//            }
-//        }
-//        var gc = canvas.getGraphicsContext2D();
-//        gc.drawImage(image, 0, 0);
-
-//        GraphicsContext
-//        GrafixImage image = imageProcessorService.open(file.getAbsolutePath());
-//        displayImage(bytes);
-
     }
 }

@@ -26,22 +26,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             }
 
             byte[] buf = new byte[bufSize];
-            if (format[1] == '5') {
-//                for(int i = 0; i < width * height; ++i){
-//                    byte b = (byte) br.read();
-//                    buf[i * 3] = b;
-//                    buf[i * 3 + 1] = b;
-//                    buf[i * 3 + 2] = b;
-//                }
-                br.read(buf);
-            } else {
-                br.read(buf);
-            }
-//            for (int i = 0; i < bufSize; ++i) {
-//                byte c = (byte) br.read();
-//                buf[i] = c;
-//            }
-
+            br.read(buf);
             return new GrafixImage(new String(format), width, height, maxVal, buf);
         } catch (IOException e) {
             throw new RuntimeException(e);
