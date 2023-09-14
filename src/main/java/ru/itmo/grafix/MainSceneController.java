@@ -121,7 +121,7 @@ public class MainSceneController {
 
     private EventHandler<Event> getTabOnCloseRequestEvent() {
         return event -> {
-            ((Tab)event.getSource()).getTabPane().setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
+            tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
             Alert alert = new ImageSavingBeforeClosingConfirmationAlert();
             ButtonType buttonType = alert.showAndWait().orElseThrow();
             if (ButtonType.YES.equals(buttonType)) {
@@ -131,7 +131,7 @@ public class MainSceneController {
             } else if (ButtonType.CANCEL.equals(buttonType)) {
                 event.consume();
             }
-            Platform.runLater(() -> ((Tab)event.getSource()).getTabPane().setTabDragPolicy(TabPane.TabDragPolicy.REORDER));
+            Platform.runLater(() -> tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER));
         };
     }
 }
