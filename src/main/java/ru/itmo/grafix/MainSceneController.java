@@ -12,8 +12,6 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
-
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
@@ -56,6 +54,14 @@ public class MainSceneController {
     public void openFile() {
         FileChooser fileChooser = new FileChooser();
         File file = fileChooser.showOpenDialog(null);
+        if (file == null) {
+            return;
+        }
+
+        doOpen(file.getAbsolutePath(), file.getName());
+    }
+
+    public void openDraggedFile(File file) {
         if (file == null) {
             return;
         }
