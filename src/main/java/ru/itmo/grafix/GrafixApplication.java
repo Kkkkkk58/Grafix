@@ -17,7 +17,6 @@ public class GrafixApplication extends Application {
         stage.setScene(scene);
         Thread.currentThread().setUncaughtExceptionHandler(new GrafixExceptionHandler());
         stage.show();
-
     }
 
     public static void main(String[] args) {
