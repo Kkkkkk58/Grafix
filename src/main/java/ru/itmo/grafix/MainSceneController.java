@@ -13,7 +13,6 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -128,7 +127,6 @@ public class MainSceneController {
         return tabPane.getSelectionModel().getSelectedItem();
     }
 
-    // TODO research
     private void closeTab(Tab tab) {
         EventHandler<Event> handler = tab.getOnClosed();
         if (handler != null) {
