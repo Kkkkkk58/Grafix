@@ -3,6 +3,7 @@ package ru.itmo.grafix;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import ru.itmo.grafix.exception.GrafixExceptionHandler;
 
@@ -15,9 +16,9 @@ public class GrafixApplication extends Application {
         Scene scene = new Scene(fxmlLoader.load(), 320, 240);
         stage.setTitle("Grafix");
         stage.setScene(scene);
+        stage.getIcons().add(new Image("static/assets/icons/icon.png"));
         Thread.currentThread().setUncaughtExceptionHandler(new GrafixExceptionHandler());
         stage.show();
-
     }
 
     public static void main(String[] args) {
