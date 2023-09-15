@@ -68,6 +68,14 @@ public class MainSceneController {
         doOpen(file.getAbsolutePath(), file.getName());
     }
 
+    public void openDraggedFile(File file) {
+        if (file == null) {
+            return;
+        }
+
+        doOpen(file.getAbsolutePath(), file.getName());
+    }
+
     private GrafixImage getActiveTabImage() {
         String activeTabId = getActiveTab().getId();
         return tabMapping.get(activeTabId);
