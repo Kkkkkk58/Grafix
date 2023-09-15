@@ -3,6 +3,7 @@ package ru.itmo.grafix;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
@@ -20,6 +21,7 @@ public class GrafixApplication extends Application {
         setDragDrop(scene, fxmlLoader.getController());
         stage.setTitle("Grafix");
         stage.setScene(scene);
+        stage.getIcons().add(new Image("static/assets/icons/icon.png"));
         Thread.currentThread().setUncaughtExceptionHandler(new GrafixExceptionHandler());
         stage.show();
     }
