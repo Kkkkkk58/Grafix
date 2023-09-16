@@ -5,9 +5,10 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
@@ -43,21 +44,14 @@ public class MainSceneController {
         doSave(image.getPath(), image);
     }
 
-    public boolean saveFileAs() {
-        if (getActiveTab() == null) {
-            return false;
-        }
-        FileChooser fileChooser = new FileChooser();
-        File file = fileChooser.showSaveDialog(null);
+    public void saveFileAs() {
+        File file = saveActiveTabImageToChosenFile();
         if (file == null) {
-            return false;
+            return;
         }
 
-        GrafixImage image = getActiveTabImage();
-        doSave(file.getAbsolutePath(), image);
         closeTab(getActiveTab());
         doOpen(file.getAbsolutePath(), file.getName());
-        return true;
     }
 
     public void openFile() {
@@ -85,7 +79,7 @@ public class MainSceneController {
 
     private void doSave(String absolutePath, GrafixImage image) {
         ByteArrayOutputStream stream = imageProcessorService.write(image);
-        try(OutputStream fileStream = new FileOutputStream(absolutePath)){
+        try (OutputStream fileStream = new FileOutputStream(absolutePath)) {
             stream.writeTo(fileStream);
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -132,8 +126,9 @@ public class MainSceneController {
         if (handler != null) {
             handler.handle(null);
         } else {
-            tab.getTabPane().getTabs().remove(tab);
+            tabPane.getTabs().remove(tab);
         }
+        tabMapping.remove(tab.getId());
     }
 
     private EventHandler<Event> getTabOnCloseRequestEvent() {
@@ -141,14 +136,30 @@ public class MainSceneController {
             tabPane.setTabDragPolicy(TabPane.TabDragPolicy.FIXED);
             Alert alert = new ImageSavingBeforeClosingConfirmationAlert();
             ButtonType buttonType = alert.showAndWait().orElseThrow();
-            if (ButtonType.YES.equals(buttonType)) {
-                if (!saveFileAs()) {
-                    event.consume();
-                }
-            } else if (ButtonType.CANCEL.equals(buttonType)) {
+            if (ButtonType.CANCEL.equals(buttonType)
+                    || ButtonType.YES.equals(buttonType) && saveActiveTabImageToChosenFile() == null) {
                 event.consume();
+            } else {
+                closeTab(getActiveTab());
             }
             Platform.runLater(() -> tabPane.setTabDragPolicy(TabPane.TabDragPolicy.REORDER));
         };
+    }
+
+    private File saveActiveTabImageToChosenFile() {
+        if (getActiveTab() == null) {
+            return null;
+        }
+
+        FileChooser fileChooser = new FileChooser();
+        File file = fileChooser.showSaveDialog(null);
+        if (file == null) {
+            return null;
+        }
+
+        GrafixImage image = getActiveTabImage();
+        doSave(file.getAbsolutePath(), image);
+
+        return file;
     }
 }
