@@ -98,9 +98,10 @@ public class MainSceneController {
         tab.setContent(scrP);
         tab.setId(tabId);
         tabMapping.put(tabId, image);
+        byte[] data = FbConverter.convertFloatToByte(image.getData());
         if (image.getFormat().charAt(1) == '5') {
             BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            img.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), image.getData());
+            img.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), data);
             WritableImage img2 = new WritableImage(image.getWidth(), image.getHeight());
             SwingFXUtils.toFXImage(img, img2);
             ImageView imageView = new ImageView(img2);
@@ -111,7 +112,7 @@ public class MainSceneController {
             ImageView imageView = new ImageView(img);
             PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
             int mult = 3;
-            writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, image.getData(), 0, image.getWidth() * mult);
+            writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, data, 0, image.getWidth() * mult);
             scrP.setTarget(imageView);
         }
 

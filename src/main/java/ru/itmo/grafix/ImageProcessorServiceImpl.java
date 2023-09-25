@@ -34,13 +34,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
             byte[] buf = new byte[bufSize];
             br.read(buf);
-            if (maxVal < 255) {
-                double multiplier = 255.0 / maxVal;
-                for (int i = 0; i < bufSize; ++i) {
-                    buf[i] *= multiplier;
-                }
-            }
-            return new GrafixImage(new String(format), width, height, 255, buf, absolutePath, headerSize);
+            return new GrafixImage(new String(format), width, height, 255, FbConverter.convertBytesToFloat(buf, maxVal), absolutePath, headerSize);
         }
         catch (IOException inputException) {
             throw new ByteReaderException();
@@ -52,7 +46,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream(image.getHeaderSize() + image.getData().length + 1)) {
             String header = image.getFormat() + " " + image.getWidth() + " " + image.getHeight() + " " + image.getMaxVal() + " ";
             stream.write(header.getBytes());
-            stream.write(image.getData());
+            stream.write(FbConverter.convertFloatToByte(image.getData()));
             return stream;
         } catch (IOException outputException) {
             throw new ByteWriterException();
