@@ -4,7 +4,7 @@ public class FbConverter {
     public static float[] convertBytesToFloat(byte[] buffer, int maxValue){
         float[] newBuffer = new float[buffer.length];
         for (int x = 0; x < buffer.length; x++){
-            newBuffer[x] = buffer[x]/ (float)maxValue;
+            newBuffer[x] = (buffer[x] & 0xff) / (float)maxValue;
         }
         return newBuffer;
     }
