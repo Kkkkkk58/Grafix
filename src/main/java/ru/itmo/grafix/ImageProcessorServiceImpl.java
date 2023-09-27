@@ -1,5 +1,6 @@
 package ru.itmo.grafix;
 
+import ru.itmo.grafix.api.ColorSpace;
 import ru.itmo.grafix.exception.ByteReaderException;
 import ru.itmo.grafix.exception.ByteWriterException;
 import ru.itmo.grafix.exception.UnsupportedImageFormatException;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 public class ImageProcessorServiceImpl implements ImageProcessorService {
     @Override
-    public GrafixImage open(String absolutePath) {
+    public GrafixImage open(String absolutePath, ColorSpace colorSpace) {
         try (FileInputStream br = new FileInputStream(absolutePath)) {
             byte[] format = new byte[2];
             int count = br.read(format);
@@ -20,7 +21,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
                 throw new UnsupportedImageFormatException();
             }
             int headerSize = 2 + 1;
-            String res = "";
+            String res;
             int width = Integer.parseInt(res = readUntilWhitespace(br));
             headerSize += res.length() + 1;
             int height = Integer.parseInt(res = readUntilWhitespace(br));
@@ -34,7 +35,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
             byte[] buf = new byte[bufSize];
             br.read(buf);
-            return new GrafixImage(new String(format), width, height, 255, FbConverter.convertBytesToFloat(buf, maxVal), absolutePath, headerSize);
+            return new GrafixImage(new String(format), width, height, 255, FbConverter.convertBytesToFloat(buf, maxVal), absolutePath, headerSize, colorSpace);
         }
         catch (IOException inputException) {
             throw new ByteReaderException();

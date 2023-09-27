@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.VBox?>
+<?import ru.itmo.grafix.colorSpace.CMY?>
+<?import ru.itmo.grafix.colorSpace.HSL?>
+<?import ru.itmo.grafix.colorSpace.HSV?>
+<?import ru.itmo.grafix.colorSpace.RGB?>
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ru.itmo.grafix.MainSceneController">
     <MenuBar VBox.vgrow="NEVER">
@@ -11,6 +16,11 @@
             <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open…">
                 <accelerator>
                     <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
+                </accelerator>
+            </MenuItem>
+            <MenuItem mnemonicParsing="false" onAction="#openFileAs" text="Open As…">
+                <accelerator>
+                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
                 </accelerator>
             </MenuItem>
             <Menu mnemonicParsing="false" text="Open Recent"/>
@@ -44,8 +54,21 @@
             <MenuItem mnemonicParsing="false" text="Select All"/>
             <MenuItem mnemonicParsing="false" text="Unselect All"/>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help">
-            <MenuItem mnemonicParsing="false" text="About Grafix"/>
+        <Menu mnemonicParsing="false" text="Help"/>
+        <Menu mnemonicParsing="false">
+            <graphic>
+                <ComboBox fx:id="colorSpaceList" nodeOrientation="LEFT_TO_RIGHT" onAction="#chooseColorSpace"
+                          prefWidth="150.0" promptText="Color space" visibleRowCount="7">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <RGB/>
+                            <CMY/>
+                            <HSL/>
+                            <HSV/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+            </graphic>
         </Menu>
     </MenuBar>
     <TabPane fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER"/>
