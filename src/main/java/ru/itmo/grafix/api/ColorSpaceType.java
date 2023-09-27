@@ -2,9 +2,9 @@ package ru.itmo.grafix.api;
 
 public enum ColorSpaceType {
     RGB("RGB"),
+    CMY("CMY"),
     HSL("HSL"),
-    HSV("HSV"),
-    CMY("CMY");
+    HSV("HSV");
 
 
     private final String name;
