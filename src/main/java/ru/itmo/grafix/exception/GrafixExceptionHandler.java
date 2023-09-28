@@ -4,6 +4,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 public class GrafixExceptionHandler implements Thread.UncaughtExceptionHandler {
     @Override
@@ -15,7 +16,7 @@ public class GrafixExceptionHandler implements Thread.UncaughtExceptionHandler {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setContentText(rootException.getMessage());
-            System.out.println(rootException.getMessage());
+            rootException.printStackTrace();
             alert.showAndWait();
     }
 }
