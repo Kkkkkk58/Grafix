@@ -4,11 +4,8 @@ import ru.itmo.grafix.api.ColorSpace;
 import ru.itmo.grafix.api.ColorSpaceType;
 
 public abstract class YCbCr extends ColorSpace {
-    private final float[] coefs;
-
-    protected YCbCr(ColorSpaceType type, float[] coefficients) {
+    protected YCbCr(ColorSpaceType type) {
         super(type);
-        this.coefs = coefficients;
     }
 
     @Override
@@ -16,10 +13,9 @@ public abstract class YCbCr extends ColorSpace {
         float[] newBuffer = new float[buffer.length];
         for (int i = 0; i < buffer.length; i += 3) {
             float r = buffer[i], g = buffer[i + 1], b = buffer[i + 2];
-            float y = getLuma(r, g, b);
-            newBuffer[i] = y;
-            newBuffer[i + 1] = getChromaticBlue(b, y);
-            newBuffer[i + 2] = getChromaticRed(r, y);
+            newBuffer[i] = getLuma(r, g, b) + 16f / 255f;
+            newBuffer[i + 1] = getChromaticBlue(r, g, b) + 128f / 255f;
+            newBuffer[i + 2] = getChromaticRed(r, g, b) + 128f / 255f;
         }
 
         return newBuffer;
@@ -29,7 +25,7 @@ public abstract class YCbCr extends ColorSpace {
     public float[] toRGB(float[] buffer) {
         float[] newBuffer = new float[buffer.length];
         for (int i = 0; i < buffer.length; i += 3) {
-            float y = buffer[i], cb = buffer[i + 1], cr = buffer[i + 2];
+            float y = buffer[i] - 16f / 255f, cb = buffer[i + 1] - 128f / 255f, cr = buffer[i + 2] - 128f / 255f;
             newBuffer[i] = getR(y, cb, cr);
             newBuffer[i + 1] = getG(y, cb, cr);
             newBuffer[i + 2] = getB(y, cb, cr);
@@ -38,27 +34,15 @@ public abstract class YCbCr extends ColorSpace {
         return newBuffer;
     }
 
-    private float getLuma(float r, float g, float b) {
-        return coefs[0] * r + coefs[1] * g + coefs[2] * b;
-    }
+    protected abstract float getLuma(float r, float g, float b);
 
-    private float getChromaticBlue(float b, float y) {
-        return (b - y) / coefs[3];
-    }
+    protected abstract float getChromaticBlue(float r, float g, float b);
 
-    private float getChromaticRed(float r, float y) {
-        return (r - y) / coefs[4];
-    }
+    protected abstract float getChromaticRed(float r, float g, float b);
 
-    private float getR(float y, float cb, float cr) {
-        return y + coefs[4] * cr;
-    }
+    protected abstract float getR(float y, float cb, float cr);
 
-    private float getG(float y, float cb, float cr) {
-        return y - (coefs[0] * coefs[4] / coefs[1]) * cr - (coefs[2] * coefs[3] / coefs[1]) * cb;
-    }
+    protected abstract float getG(float y, float cb, float cr);
 
-    private float getB(float y, float cb, float cr) {
-        return y + coefs[3] * cb;
-    }
+    protected abstract float getB(float y, float cb, float cr);
 }
