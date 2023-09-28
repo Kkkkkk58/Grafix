@@ -12,6 +12,7 @@ public abstract class ColorSpace {
 
     public abstract float[] toRGB(float[] buffer);
     public abstract float[] fromRGB(float[] buffer);
+    public abstract float getCoefficient();
     public int getIndex(){
         return type.ordinal();
     }

@@ -89,4 +89,9 @@ public class HSL extends ColorSpace {
         }
         return new float[]{R, G, B};
     }
+
+    @Override
+    public float getCoefficient() {
+        return 0.5f;
+    }
 }

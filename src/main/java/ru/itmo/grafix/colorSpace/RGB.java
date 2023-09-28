@@ -17,4 +17,9 @@ public class RGB extends ColorSpace {
     public float[] fromRGB(float[] buffer) {
         return buffer;
     }
+
+    @Override
+    public float getCoefficient() {
+        return 0;
+    }
 }

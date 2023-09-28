@@ -103,8 +103,8 @@ public class MainSceneController {
             return;
         }
         ColorSpace colorSpace = getDefaultColorSpace();
-        channelList.setValue("all");
-        colorSpaceList.setValue(colorSpace);
+//        channelList.setValue("all");
+//        colorSpaceList.setValue(colorSpace);
         doOpen(file.getAbsolutePath(), file.getName(), colorSpace);
     }
 
@@ -148,8 +148,8 @@ public class MainSceneController {
             image.setChannel(0);
         } else {
             int ch = Integer.parseInt(channel);
-            displayImageP6(FbConverter.convertFloatToByte(ChannelDecomposer.decompose(colorSpaceList.getSelectionModel().
-                    getSelectedItem().toRGB(image.getData()), ch)), image.getWidth(), image.getHeight());
+            displayImageP6(FbConverter.convertFloatToByte(colorSpaceList.getSelectionModel().
+                    getSelectedItem().toRGB(ChannelDecomposer.decompose(image.getData(), ch, image.getColorSpace()))), image.getWidth(), image.getHeight());
             image.setChannel(ch);
         }
     }
@@ -169,6 +169,7 @@ public class MainSceneController {
             return;
         }
         getActiveTabImage().convertTo(selectedMode);
+        channelList.getSelectionModel().selectLast();
     }
 
     private GrafixImage getActiveTabImage() {

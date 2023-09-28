@@ -46,4 +46,9 @@ public class HSV extends ColorSpace {
         }
         return newBuffer;
     }
+
+    @Override
+    public float getCoefficient() {
+        return 0.5f;
+    }
 }
