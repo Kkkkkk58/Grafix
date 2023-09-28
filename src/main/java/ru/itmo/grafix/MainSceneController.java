@@ -12,10 +12,7 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import ru.itmo.grafix.api.ColorSpace;
-import ru.itmo.grafix.colorSpace.CMY;
-import ru.itmo.grafix.colorSpace.HSL;
-import ru.itmo.grafix.colorSpace.HSV;
-import ru.itmo.grafix.colorSpace.RGB;
+import ru.itmo.grafix.colorSpace.*;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -32,7 +29,8 @@ public class MainSceneController {
     public ComboBox<ColorSpace> colorSpaceList;
 
     private boolean wasColorSpaceChanged = true;
-    private final List<ColorSpace> colorSpaces = List.of(new RGB(), new HSL(), new HSV(), new CMY());
+    private final List<ColorSpace> colorSpaces = List.of(
+            new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
 
     public void initialize() {
         colorSpaceList.getSelectionModel().selectFirst();

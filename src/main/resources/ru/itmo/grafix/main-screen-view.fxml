@@ -4,10 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.input.KeyCodeCombination?>
 <?import javafx.scene.layout.VBox?>
-<?import ru.itmo.grafix.colorSpace.CMY?>
-<?import ru.itmo.grafix.colorSpace.HSL?>
-<?import ru.itmo.grafix.colorSpace.HSV?>
-<?import ru.itmo.grafix.colorSpace.RGB?>
+<?import ru.itmo.grafix.colorSpace.*?>
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/20.0.1" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="ru.itmo.grafix.MainSceneController">
     <MenuBar VBox.vgrow="NEVER">
@@ -65,6 +62,9 @@
                             <CMY/>
                             <HSL/>
                             <HSV/>
+                            <YCbCr601/>
+                            <YCbCr709/>
+                            <YCoCg/>
                         </FXCollections>
                     </items>
                 </ComboBox>

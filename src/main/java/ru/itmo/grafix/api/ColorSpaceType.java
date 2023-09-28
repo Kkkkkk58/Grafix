@@ -4,7 +4,10 @@ public enum ColorSpaceType {
     RGB("RGB"),
     CMY("CMY"),
     HSL("HSL"),
-    HSV("HSV");
+    HSV("HSV"),
+    YCBCR601("YCbCr.601"),
+    YCBCR709("YCbCr.709"),
+    YCOCG("YCoCg");
 
 
     private final String name;

@@ -4,9 +4,9 @@ import ru.itmo.grafix.api.ColorSpace;
 import ru.itmo.grafix.api.ColorSpaceType;
 
 // TODO
-public class YCbCr601 extends ColorSpace {
-    public YCbCr601() {
-        super(ColorSpaceType.YCBCR601);
+public class YCbCr709 extends ColorSpace {
+    public YCbCr709() {
+        super(ColorSpaceType.YCBCR709);
     }
 
     @Override
