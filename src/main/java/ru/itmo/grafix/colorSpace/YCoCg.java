@@ -11,7 +11,7 @@ public class YCoCg extends ColorSpace {
     @Override
     public float[] toRGB(float[] buffer) {
         float[] newBuffer = new float[buffer.length];
-        for (int i = 0; i < buffer.length; ++i) {
+        for (int i = 0; i < buffer.length; i += 3) {
             float y = buffer[i], co = buffer[i + 1], cg = buffer[i + 2];
             float tmp = y - cg;
             newBuffer[i] = tmp + co;
