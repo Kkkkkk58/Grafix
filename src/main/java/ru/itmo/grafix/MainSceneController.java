@@ -17,10 +17,7 @@ import ru.itmo.grafix.colorSpace.*;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.ByteBuffer;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 public class MainSceneController {
     @FXML
@@ -28,11 +25,15 @@ public class MainSceneController {
     @FXML
     public ComboBox<ColorSpace> colorSpaceList;
 
+    @FXML
+    public ComboBox<String> channelList;
+
     private boolean wasColorSpaceChanged = true;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
 
     public void initialize() {
+        channelList.getSelectionModel().selectLast();
         colorSpaceList.getSelectionModel().selectFirst();
         tabPane.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             String id = newValue.getId();
@@ -40,9 +41,11 @@ public class MainSceneController {
             if (image == null) {
                 return;
             }
+            channelList.setVisible(!Objects.equals(image.getFormat(), "P5"));
             ColorSpace colorSpace = image.getColorSpace();
             wasColorSpaceChanged = false;
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
+            channelList.setValue(image.getChannel());
             wasColorSpaceChanged = true;
         }));
     }
@@ -142,7 +145,9 @@ public class MainSceneController {
             SwingFXUtils.toFXImage(img, img2);
             ImageView imageView = new ImageView(img2);
             scrP.setTarget(imageView);
+            channelList.setVisible(false);
         } else {
+            channelList.setVisible(true);
             WritableImage img = new WritableImage(image.getWidth(), image.getHeight());
             PixelWriter writer = img.getPixelWriter();
             ImageView imageView = new ImageView(img);
@@ -217,5 +222,33 @@ public class MainSceneController {
             colorSpaceList.setValue(colorSpaceList.getItems().get(result.getIndex()));
             doOpen(file.getAbsolutePath(), file.getName(), result);
         }
+    }
+
+    public void chooseChannel() {
+        String channel = channelList.getSelectionModel().getSelectedItem();
+        GrafixImage image = getActiveTabImage();
+        if(Objects.equals(channel, "all")){
+            displayImageP6(FbConverter.convertFloatToByte(colorSpaceList.getSelectionModel().getSelectedItem().
+                    toRGB(image.getData())), image.getWidth(), image.getHeight());
+            image.setChannel(0);
+        }
+        else{
+            int ch = Integer.parseInt(channel);
+            displayImageP6(FbConverter.convertFloatToByte(ChannelDecomposer.decompose(colorSpaceList.getSelectionModel().
+                    getSelectedItem().toRGB(image.getData()), ch)), image.getWidth(), image.getHeight());
+            image.setChannel(ch);
+        }
+    }
+
+    private void displayImageP6(byte[] data, int width, int height){
+        WritableImage img = new WritableImage(width, height);
+        PixelWriter writer = img.getPixelWriter();
+        ZoomableScrollPane scrP = new ZoomableScrollPane();
+        scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
+        getActiveTab().setContent(scrP);
+        PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
+        writer.setPixels(0, 0, width, height, pf, data, 0, width * 3);
+        ImageView imageView = new ImageView(img);
+        scrP.setTarget(imageView);
     }
 }

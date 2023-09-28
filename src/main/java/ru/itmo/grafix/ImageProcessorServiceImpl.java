@@ -44,6 +44,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     @Override
     public ByteArrayOutputStream write(GrafixImage image) {
+        image = ChannelDecomposer.getDecomposedImage(image);
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream(image.getHeaderSize() + image.getData().length + 1)) {
             String header = image.getFormat() + " " + image.getWidth() + " " + image.getHeight() + " " + image.getMaxVal() + " ";
             stream.write(header.getBytes());
