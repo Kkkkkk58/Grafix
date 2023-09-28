@@ -128,11 +128,11 @@ public class MainSceneController {
     }
 
     public void chooseChannel() {
-        if(isEndlessLoop){
+        if (isEndlessLoop) {
             isEndlessLoop = false;
             return;
         }
-        if(getActiveTab() == null){
+        if (getActiveTab() == null) {
             isEndlessLoop = true;
             channelList.setValue("all");
             return;
@@ -155,11 +155,11 @@ public class MainSceneController {
     }
 
     public void chooseColorSpace() {
-        if(isEndlessLoop){
+        if (isEndlessLoop) {
             isEndlessLoop = false;
             return;
         }
-        if(getActiveTab() == null){
+        if (getActiveTab() == null) {
             isEndlessLoop = true;
             colorSpaceList.setValue(getDefaultColorSpace());
             return;
