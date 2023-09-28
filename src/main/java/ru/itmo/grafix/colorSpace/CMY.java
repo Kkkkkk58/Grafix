@@ -23,4 +23,9 @@ public class CMY extends ColorSpace {
     public float[] fromRGB(float[] buffer) {
         return toRGB(buffer);
     }
+
+    @Override
+    public float getCoefficient() {
+        return 0;
+    }
 }

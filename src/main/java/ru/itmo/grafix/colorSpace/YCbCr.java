@@ -33,6 +33,10 @@ public abstract class YCbCr extends ColorSpace {
 
         return newBuffer;
     }
+    @Override
+    public float getCoefficient() {
+        return 0.5f;
+    }
 
     protected abstract float getLuma(float r, float g, float b);
 

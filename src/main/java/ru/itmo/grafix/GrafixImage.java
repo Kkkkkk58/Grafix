@@ -74,5 +74,6 @@ public class GrafixImage {
         }
         this.data =  colorSpace.fromRGB(this.colorSpace.toRGB(this.getData()));
         this.colorSpace = colorSpace;
+        this.channel = 0;
     }
 }

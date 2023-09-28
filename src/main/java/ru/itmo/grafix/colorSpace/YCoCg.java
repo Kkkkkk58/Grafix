@@ -35,6 +35,11 @@ public class YCoCg extends ColorSpace {
         return newBuffer;
     }
 
+    @Override
+    public float getCoefficient() {
+        return 0.0f;
+    }
+
     private float getLuma(float r, float g, float b) {
         return 0.25f * r + 0.5f * g + 0.25f * b;
     }
