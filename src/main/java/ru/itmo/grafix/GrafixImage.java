@@ -1,15 +1,19 @@
 package ru.itmo.grafix;
 
+import ru.itmo.grafix.api.ColorSpace;
+
 public class GrafixImage {
     private String format;
     private int width;
     private int height;
     private int maxVal;
-    private byte[] data;
+    private float[] data;
     private String path;
     private int headerSize;
+    private ColorSpace colorSpace;
+    private int channel;
 
-    public GrafixImage(String format, int width, int height, int maxVal, byte[] data, String path, int headerSize) {
+    public GrafixImage(String format, int width, int height, int maxVal, float[] data, String path, int headerSize, ColorSpace colorSpace) {
         this.format = format;
         this.width = width;
         this.height = height;
@@ -17,10 +21,8 @@ public class GrafixImage {
         this.data = data;
         this.path = path;
         this.headerSize = headerSize;
-    }
-
-    public GrafixImage(String format, int width, int height, int maxVal, String path, int headerSize) {
-        this(format, width, height, maxVal, new byte[width * height], path, headerSize);
+        this.colorSpace = colorSpace;
+        this.channel = 0;
     }
 
     public String getFormat() {
@@ -35,12 +37,43 @@ public class GrafixImage {
         return width;
     }
 
-    public byte[] getData() {
+    public float[] getData() {
         return data;
     }
+
     public String getPath() {
         return path;
     }
-    public int getHeaderSize(){return headerSize;}
-    public int getMaxVal(){return maxVal;}
+
+    public int getHeaderSize() {
+        return headerSize;
+    }
+
+    public int getMaxVal() {
+        return maxVal;
+    }
+
+    public ColorSpace getColorSpace() {
+        return colorSpace;
+    }
+
+    public String getChannel(){
+        if(channel == 0){
+            return "all";
+        }
+        return String.valueOf(channel);
+    }
+
+    public void setChannel(int channel){
+        this.channel = channel;
+    }
+
+    public void convertTo(ColorSpace colorSpace) {
+        if(colorSpace == this.getColorSpace()){
+            return;
+        }
+        this.data =  colorSpace.fromRGB(this.colorSpace.toRGB(this.getData()));
+        this.colorSpace = colorSpace;
+        this.channel = 0;
+    }
 }

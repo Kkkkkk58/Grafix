@@ -13,4 +13,6 @@ module ru.itmo.grafix {
 
     opens ru.itmo.grafix to javafx.fxml;
     exports ru.itmo.grafix;
+    exports ru.itmo.grafix.colorSpace to javafx.fxml;
+    exports ru.itmo.grafix.api;
 }

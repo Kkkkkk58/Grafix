@@ -1,10 +1,10 @@
 package ru.itmo.grafix.exception;
-import javafx.scene.control.Alert.AlertType;
+
 import javafx.scene.control.Alert;
-import javafx.scene.image.Image;
-import javafx.stage.Stage;
+import javafx.scene.control.Alert.AlertType;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 public class GrafixExceptionHandler implements Thread.UncaughtExceptionHandler {
     @Override
@@ -16,6 +16,7 @@ public class GrafixExceptionHandler implements Thread.UncaughtExceptionHandler {
             Alert alert = new Alert(AlertType.ERROR);
             alert.setTitle("Error");
             alert.setContentText(rootException.getMessage());
+            rootException.printStackTrace();
             alert.showAndWait();
     }
 }
