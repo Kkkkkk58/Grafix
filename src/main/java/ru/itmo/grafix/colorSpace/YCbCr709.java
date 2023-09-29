@@ -9,31 +9,31 @@ public class YCbCr709 extends YCbCr {
 
     @Override
     protected float getLuma(float r, float g, float b) {
-        return 0.183f * r + 0.614f * g + 0.062f * b;
+        return 0.2126f * r + 0.7152f * g + 0.0722f * b;
     }
 
     @Override
     protected float getChromaticBlue(float r, float g, float b) {
-        return -0.101f * r - 0.338f * g + 0.439f * b;
+        return -0.1146f * r - 0.3854f * g + 0.5f * b;
     }
 
     @Override
     protected float getChromaticRed(float r, float g, float b) {
-        return 0.439f * r - 0.399f * g - 0.040f * b;
+        return 0.5f * r - 0.4542f * g - 0.0458f * b;
     }
 
     @Override
     protected float getR(float y, float cb, float cr) {
-        return 1.164f * y + 1.793f * cr;
+        return y + 1.5748f * cr;
     }
 
     @Override
     protected float getG(float y, float cb, float cr) {
-        return 1.164f * y - 0.534f * cr - 0.213f * cb;
+        return y - 0.4681f * cr - 0.1873f * cb;
     }
 
     @Override
     protected float getB(float y, float cb, float cr) {
-        return 1.164f * y + 2.115f * cb;
+        return y + 1.8556f * cb;
     }
 }
