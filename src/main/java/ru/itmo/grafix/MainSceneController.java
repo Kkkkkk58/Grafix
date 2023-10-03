@@ -283,4 +283,12 @@ public class MainSceneController {
     private ColorSpace getDefaultColorSpace() {
         return colorSpaceList.getItems().get(0);
     }
+
+    public void assignGamma() {
+        throw new RuntimeException();
+    }
+
+    public void convertGamma() {
+        throw new RuntimeException();
+    }
 }

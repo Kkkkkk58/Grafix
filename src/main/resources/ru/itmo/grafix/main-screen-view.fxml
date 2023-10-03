@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.collections.FXCollections?>
+<?import java.lang.*?>
+<?import javafx.collections.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.KeyCodeCombination?>
-<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.input.*?>
+<?import javafx.scene.layout.*?>
 <?import ru.itmo.grafix.colorSpace.*?>
-<?import java.lang.String?>
+
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.grafix.MainSceneController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
@@ -40,6 +41,12 @@
             <MenuItem mnemonicParsing="false" text="Quit" />
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
+            <Menu mnemonicParsing="false" text="Gamma...">
+                <items>
+                    <MenuItem mnemonicParsing="false" onAction="#assignGamma" text="Assign" />
+                    <MenuItem mnemonicParsing="false" onAction="#convertGamma" text="Convert" />
+                </items>
+            </Menu>
             <MenuItem mnemonicParsing="false" text="Undo" />
             <MenuItem mnemonicParsing="false" text="Redo" />
             <SeparatorMenuItem mnemonicParsing="false" />
@@ -71,7 +78,7 @@
         </Menu>
         <Menu mnemonicParsing="false">
             <graphic>
-                <ComboBox fx:id="channelList" prefHeight="25.0" prefWidth="101.0" promptText="Channel" onAction="#chooseChannel">
+                <ComboBox fx:id="channelList" onAction="#chooseChannel" prefHeight="25.0" prefWidth="101.0" promptText="Channel">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
                             <String fx:value="1" />
