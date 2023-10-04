@@ -1,4 +1,4 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.core.imageprocessing;
 
 public class FbConverter {
     public static float[] convertBytesToFloat(byte[] buffer, int maxValue){

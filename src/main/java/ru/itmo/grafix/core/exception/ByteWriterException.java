@@ -1,4 +1,4 @@
-package ru.itmo.grafix.exception;
+package ru.itmo.grafix.core.exception;
 
 public class ByteWriterException extends GrafixException {
     public ByteWriterException() {

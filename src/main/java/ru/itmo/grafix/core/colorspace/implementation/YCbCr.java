@@ -1,7 +1,7 @@
-package ru.itmo.grafix.colorSpace;
+package ru.itmo.grafix.core.colorspace.implementation;
 
-import ru.itmo.grafix.api.ColorSpace;
-import ru.itmo.grafix.api.ColorSpaceType;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
+import ru.itmo.grafix.core.colorspace.ColorSpaceType;
 
 public abstract class YCbCr extends ColorSpace {
     protected YCbCr(ColorSpaceType type) {

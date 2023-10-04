@@ -1,6 +1,7 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.core.imageprocessing;
 
-import ru.itmo.grafix.api.ColorSpace;
+import ru.itmo.grafix.core.image.GrafixImage;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
 
 import java.io.ByteArrayOutputStream;
 

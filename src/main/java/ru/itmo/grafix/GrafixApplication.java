@@ -7,7 +7,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
+import ru.itmo.grafix.core.exception.GrafixExceptionHandler;
+import ru.itmo.grafix.ui.controllers.MainSceneController;
 
 import java.io.File;
 import java.io.IOException;

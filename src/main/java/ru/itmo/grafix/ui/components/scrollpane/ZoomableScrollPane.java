@@ -1,4 +1,4 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.ui.components.scrollpane;
 
 import javafx.geometry.Bounds;
 import javafx.geometry.Point2D;

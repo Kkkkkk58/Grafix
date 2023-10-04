@@ -1,4 +1,4 @@
-package ru.itmo.grafix.exception;
+package ru.itmo.grafix.core.exception;
 
 public class GrafixException extends RuntimeException {
     public GrafixException(String message) {

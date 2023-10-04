@@ -1,6 +1,6 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.core.image;
 
-import ru.itmo.grafix.api.ColorSpace;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
 
 public class GrafixImage {
     private String format;

@@ -1,6 +1,6 @@
-package ru.itmo.grafix.colorSpace;
+package ru.itmo.grafix.core.colorspace.implementation;
 
-import ru.itmo.grafix.api.ColorSpaceType;
+import ru.itmo.grafix.core.colorspace.ColorSpaceType;
 
 public class YCbCr709 extends YCbCr {
     public YCbCr709() {

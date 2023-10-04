@@ -1,4 +1,4 @@
-package ru.itmo.grafix.api;
+package ru.itmo.grafix.core.colorspace;
 
 public enum ColorSpaceType {
     RGB("RGB"),

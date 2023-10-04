@@ -1,9 +1,10 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.core.imageprocessing;
 
-import ru.itmo.grafix.api.ColorSpace;
-import ru.itmo.grafix.exception.ByteReaderException;
-import ru.itmo.grafix.exception.ByteWriterException;
-import ru.itmo.grafix.exception.UnsupportedImageFormatException;
+import ru.itmo.grafix.core.image.GrafixImage;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
+import ru.itmo.grafix.core.exception.ByteReaderException;
+import ru.itmo.grafix.core.exception.ByteWriterException;
+import ru.itmo.grafix.core.exception.UnsupportedImageFormatException;
 
 import java.io.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ru.itmo.grafix;
+package ru.itmo.grafix.ui.controllers;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -11,9 +11,16 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
-import ru.itmo.grafix.api.ColorSpace;
-import ru.itmo.grafix.colorSpace.*;
-import ru.itmo.grafix.exception.InvalidGammaException;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
+import ru.itmo.grafix.core.colorspace.implementation.*;
+import ru.itmo.grafix.core.exception.InvalidGammaException;
+import ru.itmo.grafix.core.image.GrafixImage;
+import ru.itmo.grafix.core.imageprocessing.ChannelDecomposer;
+import ru.itmo.grafix.core.imageprocessing.FbConverter;
+import ru.itmo.grafix.core.imageprocessing.ImageProcessorService;
+import ru.itmo.grafix.core.imageprocessing.ImageProcessorServiceImpl;
+import ru.itmo.grafix.ui.components.alerts.ImageSavingBeforeClosingConfirmationAlert;
+import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
