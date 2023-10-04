@@ -12,6 +12,7 @@ public class GrafixImage {
     private int headerSize;
     private ColorSpace colorSpace;
     private int channel;
+    private float gamma;
 
     public GrafixImage(String format, int width, int height, int maxVal, float[] data, String path, int headerSize, ColorSpace colorSpace) {
         this.format = format;
@@ -23,6 +24,7 @@ public class GrafixImage {
         this.headerSize = headerSize;
         this.colorSpace = colorSpace;
         this.channel = 0;
+        this.gamma = 0f;
     }
 
     public String getFormat() {
@@ -64,8 +66,16 @@ public class GrafixImage {
         return String.valueOf(channel);
     }
 
+    public float getGamma(){
+        return gamma;
+    }
+
     public void setChannel(int channel){
         this.channel = channel;
+    }
+
+    public void setGamma(float gamma){
+        this.gamma = gamma;
     }
 
     public void convertTo(ColorSpace colorSpace) {
@@ -75,5 +85,9 @@ public class GrafixImage {
         this.data =  colorSpace.fromRGB(this.colorSpace.toRGB(this.getData()));
         this.colorSpace = colorSpace;
         this.channel = 0;
+    }
+
+    public void setData(float[] newData){
+        this.data = newData;
     }
 }

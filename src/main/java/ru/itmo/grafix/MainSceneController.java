@@ -13,6 +13,7 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import ru.itmo.grafix.api.ColorSpace;
 import ru.itmo.grafix.colorSpace.*;
+import ru.itmo.grafix.exception.InvalidGammaException;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -32,6 +33,8 @@ public class MainSceneController {
     private boolean isEndlessLoop = false;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
+
+    private final float gammaConst = 0.0031308f;
 
     public void initialize() {
         channelList.getSelectionModel().selectLast();
@@ -54,6 +57,7 @@ public class MainSceneController {
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
             channelList.setValue(image.getChannel());
             wasColorSpaceChanged = true;
+
         }));
     }
 
@@ -173,7 +177,11 @@ public class MainSceneController {
     }
 
     private GrafixImage getActiveTabImage() {
-        String activeTabId = getActiveTab().getId();
+        Tab activeTab = getActiveTab();
+        if (activeTab == null) {
+            return null;
+        }
+        String activeTabId = activeTab.getId();
         return tabMapping.get(activeTabId);
     }
 
@@ -200,6 +208,7 @@ public class MainSceneController {
         tabPane.getSelectionModel().select(tab);
         byte[] data = FbConverter.convertFloatToByte(colorSpace.toRGB(image.getData()));
         if (image.getFormat().charAt(1) == '5') {
+            // TODO вынести в функцию
             BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
             img.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), data);
             WritableImage img2 = new WritableImage(image.getWidth(), image.getHeight());
@@ -282,5 +291,75 @@ public class MainSceneController {
 
     private ColorSpace getDefaultColorSpace() {
         return colorSpaceList.getItems().get(0);
+    }
+
+    public void assignGamma() {
+        Float gamma = getGammaInput("Assign gamma");
+        if (gamma == null) {
+            return;
+        }
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        float previousGamma = image.getGamma();
+        float[] data = convertGamma(gamma, previousGamma, image.getData());
+        displayImageP6(FbConverter.convertFloatToByte(data), image.getWidth(), image.getHeight());
+    }
+
+    public void convertGamma() {
+        Float gamma = getGammaInput("Convert gamma");
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        float previousGamma = image.getGamma();
+        if (gamma == null || Float.compare(previousGamma, gamma) == 0) {
+            return;
+        }
+        float[] data = convertGamma(gamma, previousGamma, image.getData());
+        image.setData(data);
+        image.setGamma(gamma);
+    }
+
+    private float[] convertGamma(Float gamma, float previousGamma, float[] data) {
+        float[] dataBuffer = Arrays.copyOf(data, data.length);
+        for (int i = 0; i < data.length; ++i) {
+            double buffer = data[i];
+            if (previousGamma != 0) {
+                buffer = Math.pow(buffer, 1.0 / previousGamma);
+            }
+            if (gamma != 0) {
+                dataBuffer[i] = (float) Math.pow(buffer, gamma);
+            } else if (buffer < gammaConst) {
+                dataBuffer[i] = (float) (buffer * 12.92f);
+            } else {
+                dataBuffer[i] = 1.055f * (float) Math.pow(buffer, 1.0 / 2.4) - 0.055f;
+//                data[i] = (float) Math.pow((buffer + 0.055f) / 1.055f, 2.4f);
+            }
+        }
+        return dataBuffer;
+    }
+
+    private Float getGammaInput(String title) {
+        TextInputDialog td = new TextInputDialog();
+        td.setTitle(title);
+        td.setHeaderText("Enter gamma");
+        td.setGraphic(null);
+        float gamma = 0;
+        GrafixImage image = getActiveTabImage();
+        if (image != null) {
+            gamma = image.getGamma();
+        }
+        td.getEditor().setText(String.valueOf(gamma));
+        String inputValue = td.showAndWait().orElse(null);
+        if (inputValue == null) {
+            return null;
+        }
+        try {
+            return Float.parseFloat(inputValue);
+        } catch (NumberFormatException e) {
+            throw new InvalidGammaException(inputValue);
+        }
     }
 }
