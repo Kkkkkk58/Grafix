@@ -13,15 +13,19 @@ public class GammaCorrecter {
             if (previousGamma != 0) {
                 buffer = Math.pow(buffer, 1.0 / previousGamma);
             }
-            if (gamma != 0) {
-                dataBuffer[i] = (float) Math.pow(buffer, gamma);
-            } else if (buffer < gammaConst) {
-                dataBuffer[i] = (float) (buffer * 12.92f);
-            } else {
-                dataBuffer[i] = 1.055f * (float) Math.pow(buffer, 1.0 / 2.4) - 0.055f;
-//                data[i] = (float) Math.pow((buffer + 0.055f) / 1.055f, 2.4f);
-            }
+            dataBuffer[i] = getConvertedValue(gamma, buffer);
+
         }
         return dataBuffer;
+    }
+
+    private static float getConvertedValue(Float gamma, double buffer) {
+        if (gamma != 0) {
+            return (float) Math.pow(buffer, gamma);
+        } else if (buffer < gammaConst) {
+            return (float) (buffer * 12.92f);
+        }
+//      (float) Math.pow((buffer + 0.055f) / 1.055f, 2.4f); - inverse
+        return 1.055f * (float) Math.pow(buffer, 1.0 / 2.4) - 0.055f;
     }
 }
