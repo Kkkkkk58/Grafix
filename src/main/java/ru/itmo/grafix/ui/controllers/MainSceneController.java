@@ -13,12 +13,8 @@ import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
-import ru.itmo.grafix.core.exception.InvalidGammaException;
 import ru.itmo.grafix.core.image.GrafixImage;
-import ru.itmo.grafix.core.imageprocessing.ChannelDecomposer;
-import ru.itmo.grafix.core.imageprocessing.FbConverter;
-import ru.itmo.grafix.core.imageprocessing.ImageProcessorService;
-import ru.itmo.grafix.core.imageprocessing.ImageProcessorServiceImpl;
+import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.ui.components.dialogs.ColorSpaceChoiceDialog;
 import ru.itmo.grafix.ui.components.dialogs.GammaInputDialog;
 import ru.itmo.grafix.ui.components.dialogs.ImageSavingBeforeClosingConfirmationAlert;
@@ -42,8 +38,6 @@ public class MainSceneController {
     private boolean isEndlessLoop = false;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
-
-    private final float gammaConst = 0.0031308f;
 
     public void initialize() {
         channelList.getSelectionModel().selectLast();
@@ -177,6 +171,32 @@ public class MainSceneController {
         channelList.getSelectionModel().selectLast();
     }
 
+    public void assignGamma() {
+        GrafixImage image = getActiveTabImage();
+        Float gamma = GammaInputDialog.getGammaInput("Assign gamma", image);
+        if (gamma == null) {
+            return;
+        }
+        float previousGamma = image.getGamma();
+        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, image.getData());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+    }
+
+    public void convertGamma() {
+        GrafixImage image = getActiveTabImage();
+        Float gamma = GammaInputDialog.getGammaInput("Convert gamma", image);
+        if(gamma == null){
+            return;
+        }
+        float previousGamma = image.getGamma();
+        if (Float.compare(previousGamma, gamma) == 0) {
+            return;
+        }
+        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, image.getData());
+        image.setData(data);
+        image.setGamma(gamma);
+    }
+
     private GrafixImage getActiveTabImage() {
         Tab activeTab = getActiveTab();
         if (activeTab == null) {
@@ -287,72 +307,6 @@ public class MainSceneController {
 
     private ColorSpace getDefaultColorSpace() {
         return colorSpaceList.getItems().get(0);
-    }
-
-    public void assignGamma() {
-        Float gamma = getGammaInput("Assign gamma");
-        if (gamma == null) {
-            return;
-        }
-        GrafixImage image = getActiveTabImage();
-        if (image == null) {
-            return;
-        }
-        float previousGamma = image.getGamma();
-        float[] data = convertGamma(gamma, previousGamma, image.getData());
-        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
-    }
-
-    public void convertGamma() {
-        Float gamma = getGammaInput("Convert gamma");
-        GrafixImage image = getActiveTabImage();
-        if (image == null) {
-            return;
-        }
-        float previousGamma = image.getGamma();
-        if (gamma == null || Float.compare(previousGamma, gamma) == 0) {
-            return;
-        }
-        float[] data = convertGamma(gamma, previousGamma, image.getData());
-        image.setData(data);
-        image.setGamma(gamma);
-    }
-
-    private float[] convertGamma(Float gamma, float previousGamma, float[] data) {
-        float[] dataBuffer = Arrays.copyOf(data, data.length);
-        for (int i = 0; i < data.length; ++i) {
-            double buffer = data[i];
-            if (previousGamma != 0) {
-                buffer = Math.pow(buffer, 1.0 / previousGamma);
-            }
-            if (gamma != 0) {
-                dataBuffer[i] = (float) Math.pow(buffer, gamma);
-            } else if (buffer < gammaConst) {
-                dataBuffer[i] = (float) (buffer * 12.92f);
-            } else {
-                dataBuffer[i] = 1.055f * (float) Math.pow(buffer, 1.0 / 2.4) - 0.055f;
-//                data[i] = (float) Math.pow((buffer + 0.055f) / 1.055f, 2.4f);
-            }
-        }
-        return dataBuffer;
-    }
-
-    private Float getGammaInput(String title) {
-        float gamma = 0;
-        GrafixImage image = getActiveTabImage();
-        if (image != null) {
-            gamma = image.getGamma();
-        }
-        TextInputDialog td = new GammaInputDialog(title, gamma);
-        String inputValue = td.showAndWait().orElse(null);
-        if (inputValue == null) {
-            return null;
-        }
-        try {
-            return Float.parseFloat(inputValue);
-        } catch (NumberFormatException e) {
-            throw new InvalidGammaException(inputValue);
-        }
     }
 
     private void displayImage(String format, float[] data, int width, int height) {
