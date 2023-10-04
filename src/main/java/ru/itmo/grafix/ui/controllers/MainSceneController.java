@@ -19,7 +19,9 @@ import ru.itmo.grafix.core.imageprocessing.ChannelDecomposer;
 import ru.itmo.grafix.core.imageprocessing.FbConverter;
 import ru.itmo.grafix.core.imageprocessing.ImageProcessorService;
 import ru.itmo.grafix.core.imageprocessing.ImageProcessorServiceImpl;
-import ru.itmo.grafix.ui.components.alerts.ImageSavingBeforeClosingConfirmationAlert;
+import ru.itmo.grafix.ui.components.dialogs.ColorSpaceChoiceDialog;
+import ru.itmo.grafix.ui.components.dialogs.GammaInputDialog;
+import ru.itmo.grafix.ui.components.dialogs.ImageSavingBeforeClosingConfirmationAlert;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 
 import java.awt.image.BufferedImage;
@@ -104,8 +106,6 @@ public class MainSceneController {
             return;
         }
         ColorSpace colorSpace = getDefaultColorSpace();
-//        channelList.setValue("all");
-//        colorSpaceList.setValue(colorSpace);
         doOpen(file.getAbsolutePath(), file.getName(), colorSpace);
     }
 
@@ -114,17 +114,11 @@ public class MainSceneController {
             return;
         }
         ColorSpace colorSpace = getDefaultColorSpace();
-//        channelList.setValue("all");
-//        colorSpaceList.setValue(colorSpace);
         doOpen(file.getAbsolutePath(), file.getName(), colorSpace);
     }
 
     public void openFileAs() {
-        ChoiceDialog<ColorSpace> dialog = new ChoiceDialog<>(colorSpaces.get(0), colorSpaces);
-        dialog.setTitle("Color spaces choice");
-        dialog.setHeaderText(null);
-        dialog.setGraphic(null);
-        dialog.setContentText("Choose the color space");
+        ChoiceDialog<ColorSpace> dialog = new ColorSpaceChoiceDialog(getDefaultColorSpace(), colorSpaces);
         ColorSpace result = dialog.showAndWait().orElse(null);
         if (result != null) {
             FileChooser fileChooser = new FileChooser();
@@ -207,35 +201,18 @@ public class MainSceneController {
         tab.setOnCloseRequest(getTabOnCloseRequestEvent());
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
-        ZoomableScrollPane scrP = new ZoomableScrollPane();
-        scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
-        tab.setContent(scrP);
         tab.setId(tabId);
         tabMapping.put(tabId, image);
         tabPane.getSelectionModel().select(tab);
-        byte[] data = FbConverter.convertFloatToByte(colorSpace.toRGB(image.getData()));
         if (image.getFormat().charAt(1) == '5') {
-            // TODO вынести в функцию
-            BufferedImage img = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
-            img.getRaster().setDataElements(0, 0, image.getWidth(), image.getHeight(), data);
-            WritableImage img2 = new WritableImage(image.getWidth(), image.getHeight());
-            SwingFXUtils.toFXImage(img, img2);
-            ImageView imageView = new ImageView(img2);
-            scrP.setTarget(imageView);
             channelList.setVisible(false);
             colorSpaceList.setVisible(false);
         } else {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
-            WritableImage img = new WritableImage(image.getWidth(), image.getHeight());
-            PixelWriter writer = img.getPixelWriter();
-            ImageView imageView = new ImageView(img);
-            PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
-            int mult = 3;
-            writer.setPixels(0, 0, image.getWidth(), image.getHeight(), pf, data, 0, image.getWidth() * mult);
-            scrP.setTarget(imageView);
         }
-
+        float[] data = colorSpace.toRGB(image.getData());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
     private Tab getActiveTab() {
@@ -287,12 +264,24 @@ public class MainSceneController {
     private void displayImageP6(byte[] data, int width, int height) {
         WritableImage img = new WritableImage(width, height);
         PixelWriter writer = img.getPixelWriter();
+        PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
+        writer.setPixels(0, 0, width, height, pf, data, 0, width * 3);
+        setImage(img);
+    }
+
+    private void displayImageP5(byte[] data, int width, int height) {
+        BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
+        img.getRaster().setDataElements(0, 0, width, height, data);
+        WritableImage img2 = new WritableImage(width, height);
+        SwingFXUtils.toFXImage(img, img2);
+        setImage(img2);
+    }
+
+    private void setImage(WritableImage img) {
+        ImageView imageView = new ImageView(img);
         ZoomableScrollPane scrP = new ZoomableScrollPane();
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         getActiveTab().setContent(scrP);
-        PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
-        writer.setPixels(0, 0, width, height, pf, data, 0, width * 3);
-        ImageView imageView = new ImageView(img);
         scrP.setTarget(imageView);
     }
 
@@ -311,7 +300,7 @@ public class MainSceneController {
         }
         float previousGamma = image.getGamma();
         float[] data = convertGamma(gamma, previousGamma, image.getData());
-        displayImageP6(FbConverter.convertFloatToByte(data), image.getWidth(), image.getHeight());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
     public void convertGamma() {
@@ -349,16 +338,12 @@ public class MainSceneController {
     }
 
     private Float getGammaInput(String title) {
-        TextInputDialog td = new TextInputDialog();
-        td.setTitle(title);
-        td.setHeaderText("Enter gamma");
-        td.setGraphic(null);
         float gamma = 0;
         GrafixImage image = getActiveTabImage();
         if (image != null) {
             gamma = image.getGamma();
         }
-        td.getEditor().setText(String.valueOf(gamma));
+        TextInputDialog td = new GammaInputDialog(title, gamma);
         String inputValue = td.showAndWait().orElse(null);
         if (inputValue == null) {
             return null;
@@ -367,6 +352,14 @@ public class MainSceneController {
             return Float.parseFloat(inputValue);
         } catch (NumberFormatException e) {
             throw new InvalidGammaException(inputValue);
+        }
+    }
+
+    private void displayImage(String format, float[] data, int width, int height) {
+        if (Objects.equals(format, "P6")) {
+            displayImageP6(FbConverter.convertFloatToByte(data), width, height);
+        } else {
+            displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
     }
 }

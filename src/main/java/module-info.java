@@ -19,8 +19,8 @@ module ru.itmo.grafix {
     opens ru.itmo.grafix.ui.controllers to javafx.fxml;
     exports ru.itmo.grafix.ui.components.scrollpane;
     opens ru.itmo.grafix.ui.components.scrollpane to javafx.fxml;
-    exports ru.itmo.grafix.ui.components.alerts;
-    opens ru.itmo.grafix.ui.components.alerts to javafx.fxml;
+    exports ru.itmo.grafix.ui.components.dialogs;
+    opens ru.itmo.grafix.ui.components.dialogs to javafx.fxml;
     exports ru.itmo.grafix.core.imageprocessing;
     opens ru.itmo.grafix.core.imageprocessing to javafx.fxml;
     exports ru.itmo.grafix.core.image;

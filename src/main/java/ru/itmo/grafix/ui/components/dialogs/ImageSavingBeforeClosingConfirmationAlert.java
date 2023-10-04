@@ -1,4 +1,4 @@
-package ru.itmo.grafix.ui.components.alerts;
+package ru.itmo.grafix.ui.components.dialogs;
 
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
