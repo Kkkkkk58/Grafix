@@ -60,7 +60,6 @@ public class MainSceneController {
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
             channelList.setValue(image.getChannel());
             wasColorSpaceChanged = true;
-
         }));
     }
 
@@ -121,8 +120,8 @@ public class MainSceneController {
                 return;
             }
 
-            colorSpaceList.setValue(colorSpaceList.getItems().get(result.getIndex()));
             doOpen(file.getAbsolutePath(), file.getName(), result);
+            colorSpaceList.setValue(colorSpaceList.getItems().get(result.getIndex()));
         }
     }
 
