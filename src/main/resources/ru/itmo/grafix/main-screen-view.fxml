@@ -1,76 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import javafx.collections.*?>
+<?import javafx.collections.FXCollections?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.input.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.VBox?>
 <?import ru.itmo.grafix.colorSpace.*?>
-
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.grafix.MainSceneController">
+<?import java.lang.String?>
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/17.0.2-ea"
+      xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.grafix.MainSceneController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="New" />
+            <MenuItem mnemonicParsing="false" text="New"/>
             <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open…">
                 <accelerator>
-                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                 </accelerator>
             </MenuItem>
             <MenuItem mnemonicParsing="false" onAction="#openFileAs" text="Open As…">
                 <accelerator>
-                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                    <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
                 </accelerator>
             </MenuItem>
-            <Menu mnemonicParsing="false" text="Open Recent" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Close" />
+            <Menu mnemonicParsing="false" text="Open Recent"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Close"/>
             <MenuItem mnemonicParsing="false" onAction="#saveFile" text="Save">
                 <accelerator>
-                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP" />
+                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
                 </accelerator>
             </MenuItem>
             <MenuItem mnemonicParsing="false" onAction="#saveFileAs" text="Save As…">
                 <accelerator>
-                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP" />
+                    <KeyCodeCombination alt="UP" code="S" control="DOWN" meta="UP" shift="DOWN" shortcut="UP"/>
                 </accelerator>
             </MenuItem>
-            <MenuItem mnemonicParsing="false" text="Revert" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Preferences…" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Quit" />
+            <MenuItem mnemonicParsing="false" text="Revert"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Preferences…"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Quit"/>
         </Menu>
         <Menu mnemonicParsing="false" text="Edit">
             <Menu mnemonicParsing="false" text="Gamma...">
-                <items>
-                    <MenuItem mnemonicParsing="false" onAction="#assignGamma" text="Assign" />
-                    <MenuItem mnemonicParsing="false" onAction="#convertGamma" text="Convert" />
-                </items>
+                <MenuItem mnemonicParsing="false" onAction="#assignGamma" text="Assign"/>
+                <MenuItem mnemonicParsing="false" onAction="#convertGamma" text="Convert"/>
             </Menu>
-            <MenuItem mnemonicParsing="false" text="Undo" />
-            <MenuItem mnemonicParsing="false" text="Redo" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Cut" />
-            <MenuItem mnemonicParsing="false" text="Copy" />
-            <MenuItem mnemonicParsing="false" text="Paste" />
-            <MenuItem mnemonicParsing="false" text="Delete" />
-            <SeparatorMenuItem mnemonicParsing="false" />
-            <MenuItem mnemonicParsing="false" text="Select All" />
-            <MenuItem mnemonicParsing="false" text="Unselect All" />
+            <MenuItem mnemonicParsing="false" text="Undo"/>
+            <MenuItem mnemonicParsing="false" text="Redo"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Cut"/>
+            <MenuItem mnemonicParsing="false" text="Copy"/>
+            <MenuItem mnemonicParsing="false" text="Paste"/>
+            <MenuItem mnemonicParsing="false" text="Delete"/>
+            <SeparatorMenuItem mnemonicParsing="false"/>
+            <MenuItem mnemonicParsing="false" text="Select All"/>
+            <MenuItem mnemonicParsing="false" text="Unselect All"/>
         </Menu>
-        <Menu mnemonicParsing="false" text="Help" />
+        <Menu mnemonicParsing="false" text="Help"/>
         <Menu mnemonicParsing="false">
             <graphic>
-                <ComboBox fx:id="colorSpaceList" nodeOrientation="LEFT_TO_RIGHT" onAction="#chooseColorSpace" prefHeight="25.0" prefWidth="110.0" promptText="Color space" visibleRowCount="7">
+                <ComboBox fx:id="colorSpaceList" nodeOrientation="LEFT_TO_RIGHT" onAction="#chooseColorSpace"
+                          prefHeight="25.0" prefWidth="110.0" promptText="Color space" visibleRowCount="7">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <RGB />
-                            <CMY />
-                            <HSL />
-                            <HSV />
-                            <YCbCr601 />
-                            <YCbCr709 />
-                            <YCoCg />
+                            <RGB/>
+                            <CMY/>
+                            <HSL/>
+                            <HSV/>
+                            <YCbCr601/>
+                            <YCbCr709/>
+                            <YCoCg/>
                         </FXCollections>
                     </items>
                 </ComboBox>
@@ -78,18 +77,19 @@
         </Menu>
         <Menu mnemonicParsing="false">
             <graphic>
-                <ComboBox fx:id="channelList" onAction="#chooseChannel" prefHeight="25.0" prefWidth="101.0" promptText="Channel">
+                <ComboBox fx:id="channelList" onAction="#chooseChannel" prefHeight="25.0" prefWidth="101.0"
+                          promptText="Channel">
                     <items>
                         <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="1" />
-                            <String fx:value="2" />
-                            <String fx:value="3" />
-                            <String fx:value="all" />
+                            <String fx:value="1"/>
+                            <String fx:value="2"/>
+                            <String fx:value="3"/>
+                            <String fx:value="all"/>
                         </FXCollections>
                     </items>
                 </ComboBox>
             </graphic>
         </Menu>
     </MenuBar>
-    <TabPane fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER" />
+    <TabPane fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER"/>
 </VBox>
