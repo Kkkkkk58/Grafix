@@ -177,8 +177,9 @@ public class MainSceneController {
             return;
         }
         float previousGamma = image.getGamma();
-        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, image.getData());
-        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+        ColorSpace space = image.getColorSpace();
+        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, space.toRGB(image.getData()));
+        displayImage(image.getFormat(), space.fromRGB(data), image.getWidth(), image.getHeight());
     }
 
     public void convertGamma() {
@@ -191,8 +192,9 @@ public class MainSceneController {
         if (Float.compare(previousGamma, gamma) == 0) {
             return;
         }
-        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, image.getData());
-        image.setData(data);
+        ColorSpace space = image.getColorSpace();
+        float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, space.toRGB(image.getData()));
+        image.setData(space.fromRGB(data));
         image.setGamma(gamma);
     }
 
