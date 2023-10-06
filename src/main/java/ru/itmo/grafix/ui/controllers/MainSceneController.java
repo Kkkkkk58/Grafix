@@ -90,6 +90,7 @@ public class MainSceneController {
         ColorSpace currentColorSpace = getActiveTabImage().getColorSpace();
         closeTab(getActiveTab());
         doOpen(file.getAbsolutePath(), file.getName(), currentColorSpace);
+        colorSpaceList.setValue(colorSpaceList.getItems().get(currentColorSpace.getIndex()));
     }
 
     public void openFile() {
