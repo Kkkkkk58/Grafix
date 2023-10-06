@@ -186,11 +186,11 @@ public class MainSceneController {
     public void convertGamma() {
         GrafixImage image = getActiveTabImage();
         Float gamma = GammaInputDialog.getGammaInput("Convert gamma", image);
-        if(gamma == null){
+        if (gamma == null) {
             return;
         }
         float previousGamma = image.getGamma();
-        if (Float.compare(previousGamma, gamma) == 0) {
+        if (previousGamma == gamma) {
             return;
         }
         ColorSpace space = image.getColorSpace();

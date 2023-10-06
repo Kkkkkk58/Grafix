@@ -6,7 +6,7 @@ public class GammaCorrecter {
 
     private static final float gammaConst = 0.0031308f;
 
-    public static float[] convertGamma(Float gamma, float previousGamma, float[] data) {
+    public static float[] convertGamma(float gamma, float previousGamma, float[] data) {
         float[] dataBuffer = Arrays.copyOf(data, data.length);
         for (int i = 0; i < data.length; ++i) {
             double buffer = data[i];
@@ -19,7 +19,7 @@ public class GammaCorrecter {
         return dataBuffer;
     }
 
-    private static float getConvertedValue(Float gamma, double buffer) {
+    private static float getConvertedValue(float gamma, double buffer) {
         if (gamma != 0) {
             return (float) Math.pow(buffer, gamma);
         } else if (buffer < gammaConst) {
