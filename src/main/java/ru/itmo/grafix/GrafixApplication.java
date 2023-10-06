@@ -18,7 +18,7 @@ public class GrafixApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GrafixApplication.class.getResource("main-screen-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 640, 480);
         setDragDrop(scene, fxmlLoader.getController());
         stage.setTitle("Grafix");
         stage.setScene(scene);
