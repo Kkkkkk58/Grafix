@@ -13,6 +13,16 @@ module ru.itmo.grafix {
 
     opens ru.itmo.grafix to javafx.fxml;
     exports ru.itmo.grafix;
-    exports ru.itmo.grafix.colorSpace to javafx.fxml;
-    exports ru.itmo.grafix.api;
+    exports ru.itmo.grafix.core.colorspace.implementation to javafx.fxml;
+    exports ru.itmo.grafix.core.colorspace;
+    exports ru.itmo.grafix.ui.controllers;
+    opens ru.itmo.grafix.ui.controllers to javafx.fxml;
+    exports ru.itmo.grafix.ui.components.scrollpane;
+    opens ru.itmo.grafix.ui.components.scrollpane to javafx.fxml;
+    exports ru.itmo.grafix.ui.components.dialogs;
+    opens ru.itmo.grafix.ui.components.dialogs to javafx.fxml;
+    exports ru.itmo.grafix.core.imageprocessing;
+    opens ru.itmo.grafix.core.imageprocessing to javafx.fxml;
+    exports ru.itmo.grafix.core.image;
+    opens ru.itmo.grafix.core.image to javafx.fxml;
 }

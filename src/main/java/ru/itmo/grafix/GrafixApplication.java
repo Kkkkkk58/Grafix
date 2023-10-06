@@ -7,7 +7,8 @@ import javafx.scene.image.Image;
 import javafx.scene.input.Dragboard;
 import javafx.scene.input.TransferMode;
 import javafx.stage.Stage;
-import ru.itmo.grafix.exception.GrafixExceptionHandler;
+import ru.itmo.grafix.core.exception.GrafixExceptionHandler;
+import ru.itmo.grafix.ui.controllers.MainSceneController;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,7 @@ public class GrafixApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GrafixApplication.class.getResource("main-screen-view.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(), 320, 240);
+        Scene scene = new Scene(fxmlLoader.load(), 640, 480);
         setDragDrop(scene, fxmlLoader.getController());
         stage.setTitle("Grafix");
         stage.setScene(scene);
