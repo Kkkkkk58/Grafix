@@ -329,7 +329,7 @@ public class MainSceneController {
     public void generateGradient() {
         SizeInputDialog gradientSizeInputDialog = new SizeInputDialog();
         Pair<Integer, Integer> size = gradientSizeInputDialog.showAndWait().orElse(null);
-        if(size == null || size.getKey() == null || size.getValue() == null){
+        if (size == null || size.getKey() == null || size.getValue() == null) {
             return;
         }
         Integer width = size.getKey();
