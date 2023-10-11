@@ -7,7 +7,7 @@ public abstract class Dithering {
         this.type = type;
     }
 
-    public abstract byte[] convert(byte[] data, int width, int height);
+    public abstract byte[] convert(byte[] data, int width, int height, int bitDepth);
 
     @Override
     public String toString() {

@@ -21,7 +21,6 @@ public class SizeInputDialog extends Dialog<Pair<Integer, Integer>> {
         gridPane.add(new Label("Height"), 0, 1);
         gridPane.add(height, 1, 1);
         getDialogPane().setContent(gridPane);
-        ButtonType confirmSize = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
         setResultConverter(button -> {
                     try {

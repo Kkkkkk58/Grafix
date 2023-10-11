@@ -9,7 +9,7 @@ public class FloydSteinbergDithering extends Dithering {
     }
 
     @Override
-    public byte[] convert(byte[] data, int width, int height) {
+    public byte[] convert(byte[] data, int width, int height, int bitDepth) {
         return new byte[0];
     }
 }

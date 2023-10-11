@@ -357,19 +357,20 @@ public class MainSceneController {
         byte[] imageBytes = FbConverter.convertFloatToByte(image.getData());
         byte[] previewImageBytes = imageBytes;
         preview.setOnAction(event -> {
-            Dithering dithering = dialog.getSelectedItem();
+            Dithering dithering = dialog.getDitheringSelection().getValue();
             if (dithering == null) {
                 return;
             }
+            Integer bitDepth = dialog.getBitDepthSelection().getValue();
             byte[] data = (preview.isSelected())
-                    ? dithering.convert(previewImageBytes, image.getWidth(), image.getHeight())
+                    ? dithering.convert(previewImageBytes, image.getWidth(), image.getHeight(), bitDepth)
                     : previewImageBytes;
             displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
         });
 
-        Dithering dithering = dialog.showAndWait().orElse(null);
-        if (dithering != null) {
-            imageBytes = dithering.convert(imageBytes, image.getWidth(), image.getHeight());
+        Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
+        if (ditheringModel != null && ditheringModel.getKey() != null) {
+            imageBytes = ditheringModel.getKey().convert(imageBytes, image.getWidth(), image.getHeight(), ditheringModel.getValue());
             image.setData(FbConverter.convertBytesToFloat(imageBytes, 255));
         }
         displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
