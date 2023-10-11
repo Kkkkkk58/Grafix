@@ -10,6 +10,7 @@ import java.util.List;
 public class DitheringChoiceDialog extends ChoiceDialog<Dithering> {
     public DitheringChoiceDialog(List<Dithering> ditheringList, CheckBox previewCheckbox) {
         super(null, ditheringList);
+        setSelectedItem(null);
         setTitle("Dithering methods choice");
         setHeaderText(null);
         setGraphic(null);

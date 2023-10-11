@@ -7,4 +7,9 @@ public class AtkinsonDithering extends Dithering {
     public AtkinsonDithering() {
         super(DitheringType.ATKINSON);
     }
+
+    @Override
+    public byte[] convert(byte[] data, int width, int height) {
+        return new byte[0];
+    }
 }

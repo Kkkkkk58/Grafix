@@ -187,7 +187,7 @@ public class MainSceneController {
         float previousGamma = image.getGamma();
         ColorSpace space = image.getColorSpace();
         float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, space.toRGB(image.getData()));
-        displayImage(image.getFormat(), space.fromRGB(data), image.getWidth(), image.getHeight());
+        displayImage(image.getFormat(), FbConverter.convertFloatToByte(space.fromRGB(data)), image.getWidth(), image.getHeight());
     }
 
     public void convertGamma() {
@@ -228,7 +228,7 @@ public class MainSceneController {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
         openTab(fileName, image);
         float[] data = colorSpace.toRGB(image.getData());
-        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+        displayImage(image.getFormat(), FbConverter.convertFloatToByte(data), image.getWidth(), image.getHeight());
     }
 
     private void openTab(String tabName, GrafixImage image) {
@@ -322,11 +322,11 @@ public class MainSceneController {
         return colorSpaceList.getItems().get(0);
     }
 
-    private void displayImage(String format, float[] data, int width, int height) {
+    private void displayImage(String format, byte[] data, int width, int height) {
         if (Objects.equals(format, "P6")) {
-            displayImageP6(FbConverter.convertFloatToByte(data), width, height);
+            displayImageP6(data, width, height);
         } else {
-            displayImageP5(FbConverter.convertFloatToByte(data), width, height);
+            displayImageP5(data, width, height);
         }
     }
 
@@ -348,12 +348,26 @@ public class MainSceneController {
     }
 
     public void chooseDithering() {
-        CheckBox preview = new CheckBox("Preview");
-        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
-        preview.setOnAction(event -> System.out.println(dialog.getSelectedItem()));
-        Dithering dithering = dialog.showAndWait().orElse(null);
-        if (dithering == null) {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
             return;
         }
+        CheckBox preview = new CheckBox("Preview");
+        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
+        byte[] imageBytes = FbConverter.convertFloatToByte(image.getData());
+        byte[] previewImageBytes = imageBytes;
+        preview.setOnAction(event -> {
+            byte[] data = (preview.isSelected())
+                    ? dialog.getSelectedItem().convert(previewImageBytes, image.getWidth(), image.getHeight())
+                    : previewImageBytes;
+            displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+        });
+
+        Dithering dithering = dialog.showAndWait().orElse(null);
+        if (dithering != null) {
+            imageBytes = dithering.convert(imageBytes, image.getWidth(), image.getHeight());
+            image.setData(FbConverter.convertBytesToFloat(imageBytes, 255));
+        }
+        displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
     }
 }
