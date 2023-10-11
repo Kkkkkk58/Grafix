@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class AtkinsonDithering extends Dithering {
-    int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 1}, {2, 0}};
+    private final int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 0}, {1, 1}, {2, 0}};
     public AtkinsonDithering() {
         super(DitheringType.ATKINSON);
     }
