@@ -15,10 +15,14 @@ public class RandomDithering extends Dithering {
     @Override
     public float[] convert(float[] data, int width, int height, int bitDepth) {
         float[] buffer = new float[data.length];
+        int step = data.length / (width * height);
 
-        for (int i = 0; i < data.length; ++i) {
-            float value = (float) (data[i] + (rand.nextFloat() - 0.5) / bitDepth);
-            buffer[i] = getNearestPaletteColor(value, bitDepth);
+        for (int i = 0; i < data.length; i += step) {
+            for (int k = 0; k < step; ++k) {
+                float threshold = rand.nextFloat();
+                float value = (float) (data[i + k] + (threshold - 0.5) / bitDepth);
+                buffer[i + k] = getNearestPaletteColor(value, bitDepth);
+            }
         }
 
         return buffer;
