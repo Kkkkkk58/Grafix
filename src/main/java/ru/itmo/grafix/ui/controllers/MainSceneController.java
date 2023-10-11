@@ -357,8 +357,12 @@ public class MainSceneController {
         byte[] imageBytes = FbConverter.convertFloatToByte(image.getData());
         byte[] previewImageBytes = imageBytes;
         preview.setOnAction(event -> {
+            Dithering dithering = dialog.getSelectedItem();
+            if (dithering == null) {
+                return;
+            }
             byte[] data = (preview.isSelected())
-                    ? dialog.getSelectedItem().convert(previewImageBytes, image.getWidth(), image.getHeight())
+                    ? dithering.convert(previewImageBytes, image.getWidth(), image.getHeight())
                     : previewImageBytes;
             displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
         });
