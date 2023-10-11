@@ -187,7 +187,7 @@ public class MainSceneController {
         float previousGamma = image.getGamma();
         ColorSpace space = image.getColorSpace();
         float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, space.toRGB(image.getData()));
-        displayImage(image.getFormat(), FbConverter.convertFloatToByte(space.fromRGB(data)), image.getWidth(), image.getHeight());
+        displayImage(image.getFormat(), space.fromRGB(data), image.getWidth(), image.getHeight());
     }
 
     public void convertGamma() {
@@ -228,7 +228,7 @@ public class MainSceneController {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
         openTab(fileName, image);
         float[] data = colorSpace.toRGB(image.getData());
-        displayImage(image.getFormat(), FbConverter.convertFloatToByte(data), image.getWidth(), image.getHeight());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
     private void openTab(String tabName, GrafixImage image) {
@@ -322,11 +322,11 @@ public class MainSceneController {
         return colorSpaceList.getItems().get(0);
     }
 
-    private void displayImage(String format, byte[] data, int width, int height) {
+    private void displayImage(String format, float[] data, int width, int height) {
         if (Objects.equals(format, "P6")) {
-            displayImageP6(data, width, height);
+            displayImageP6(FbConverter.convertFloatToByte(data), width, height);
         } else {
-            displayImageP5(data, width, height);
+            displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
     }
 
@@ -354,15 +354,15 @@ public class MainSceneController {
         }
         CheckBox preview = new CheckBox("Preview");
         DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
-        byte[] imageBytes = FbConverter.convertFloatToByte(image.getData());
-        byte[] previewImageBytes = imageBytes;
+        float[] imageBytes = image.getData();
+        float[] previewImageBytes = imageBytes;
         preview.setOnAction(event -> {
             Dithering dithering = dialog.getDitheringSelection().getValue();
             if (dithering == null) {
                 return;
             }
             Integer bitDepth = dialog.getBitDepthSelection().getValue();
-            byte[] data = (preview.isSelected())
+            float[] data = (preview.isSelected())
                     ? dithering.convert(previewImageBytes, image.getWidth(), image.getHeight(), bitDepth)
                     : previewImageBytes;
             displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
@@ -371,7 +371,7 @@ public class MainSceneController {
         Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
         if (ditheringModel != null && ditheringModel.getKey() != null) {
             imageBytes = ditheringModel.getKey().convert(imageBytes, image.getWidth(), image.getHeight(), ditheringModel.getValue());
-            image.setData(FbConverter.convertBytesToFloat(imageBytes, 255));
+            image.setData(imageBytes);
         }
         displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
     }

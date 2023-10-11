@@ -9,7 +9,7 @@ public class AtkinsonDithering extends Dithering {
     }
 
     @Override
-    public byte[] convert(byte[] data, int width, int height, int bitDepth) {
-        return new byte[0];
+    public float[] convert(float[] data, int width, int height, int bitDepth) {
+        return new float[0];
     }
 }

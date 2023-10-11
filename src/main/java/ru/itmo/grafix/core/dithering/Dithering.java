@@ -7,7 +7,11 @@ public abstract class Dithering {
         this.type = type;
     }
 
-    public abstract byte[] convert(byte[] data, int width, int height, int bitDepth);
+    protected float getNearestPaletteColor(float value, int bitDepth) {
+        return Math.round(value * bitDepth) / (float) bitDepth;
+    }
+
+    public abstract float[] convert(float[] data, int width, int height, int bitDepth);
 
     @Override
     public String toString() {
