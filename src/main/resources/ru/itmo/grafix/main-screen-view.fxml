@@ -10,7 +10,10 @@
       xmlns:fx="http://javafx.com/fxml/1" fx:controller="ru.itmo.grafix.ui.controllers.MainSceneController">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
-            <MenuItem mnemonicParsing="false" text="New"/>
+            <Menu mnemonicParsing="false" text="New">
+                <MenuItem mnemonicParsing="false" onAction="#generateGradient" text="Gradient"/>
+                <MenuItem mnemonicParsing="false" onAction="#openEmptyTab" text="Empty"/>
+            </Menu>
             <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open…">
                 <accelerator>
                     <KeyCodeCombination alt="UP" code="O" control="DOWN" meta="UP" shift="UP" shortcut="UP"/>
