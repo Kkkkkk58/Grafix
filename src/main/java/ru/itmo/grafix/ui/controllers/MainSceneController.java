@@ -348,6 +348,12 @@ public class MainSceneController {
     }
 
     public void chooseDithering() {
-        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods);
+        CheckBox preview = new CheckBox("Preview");
+        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
+        preview.setOnAction(event -> System.out.println(dialog.getSelectedItem()));
+        Dithering dithering = dialog.showAndWait().orElse(null);
+        if (dithering == null) {
+            return;
+        }
     }
 }
