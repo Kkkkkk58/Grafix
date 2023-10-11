@@ -15,12 +15,14 @@ import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
+import ru.itmo.grafix.core.dithering.Dithering;
+import ru.itmo.grafix.core.dithering.implementation.AtkinsonDithering;
+import ru.itmo.grafix.core.dithering.implementation.FloydSteinbergDithering;
+import ru.itmo.grafix.core.dithering.implementation.OrderedDithering;
+import ru.itmo.grafix.core.dithering.implementation.RandomDithering;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
-import ru.itmo.grafix.ui.components.dialogs.ColorSpaceChoiceDialog;
-import ru.itmo.grafix.ui.components.dialogs.GammaInputDialog;
-import ru.itmo.grafix.ui.components.dialogs.ImageSavingBeforeClosingConfirmationAlert;
-import ru.itmo.grafix.ui.components.dialogs.SizeInputDialog;
+import ru.itmo.grafix.ui.components.dialogs.*;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 
 import java.awt.image.BufferedImage;
@@ -41,6 +43,8 @@ public class MainSceneController {
     private boolean isEndlessLoop = false;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
+    private final List<Dithering> ditheringMethods = List.of(new AtkinsonDithering(), new OrderedDithering(), new RandomDithering(),
+            new FloydSteinbergDithering());
 
     public void initialize() {
         channelList.getSelectionModel().selectLast();
@@ -341,5 +345,9 @@ public class MainSceneController {
     }
 
     public void openEmptyTab(ActionEvent actionEvent) {
+    }
+
+    public void chooseDithering() {
+        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods);
     }
 }

@@ -48,6 +48,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#assignGamma" text="Assign"/>
                 <MenuItem mnemonicParsing="false" onAction="#convertGamma" text="Convert"/>
             </Menu>
+            <MenuItem mnemonicParsing="false" onAction="#chooseDithering" text="Dithering"/>
             <MenuItem mnemonicParsing="false" text="Undo"/>
             <MenuItem mnemonicParsing="false" text="Redo"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
