@@ -1,6 +1,10 @@
 package ru.itmo.grafix.core.dithering.implementation;
 
 import ru.itmo.grafix.core.dithering.Dithering;
+import ru.itmo.grafix.core.dithering.DitheringType;
 
-public class AtkinsonDithering implements Dithering {
+public class AtkinsonDithering extends Dithering {
+    public AtkinsonDithering() {
+        super(DitheringType.ATKINSON);
+    }
 }
