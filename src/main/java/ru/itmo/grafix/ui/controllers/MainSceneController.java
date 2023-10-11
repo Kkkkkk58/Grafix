@@ -2,6 +2,7 @@ package ru.itmo.grafix.ui.controllers;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
 import ru.itmo.grafix.core.image.GrafixImage;
@@ -18,6 +20,7 @@ import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.ui.components.dialogs.ColorSpaceChoiceDialog;
 import ru.itmo.grafix.ui.components.dialogs.GammaInputDialog;
 import ru.itmo.grafix.ui.components.dialogs.ImageSavingBeforeClosingConfirmationAlert;
+import ru.itmo.grafix.ui.components.dialogs.SizeInputDialog;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 
 import java.awt.image.BufferedImage;
@@ -219,7 +222,13 @@ public class MainSceneController {
 
     private void doOpen(String absolutePath, String fileName, ColorSpace colorSpace) {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
-        Tab tab = new Tab(fileName);
+        openTab(fileName, image);
+        float[] data = colorSpace.toRGB(image.getData());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+    }
+
+    private void openTab(String tabName, GrafixImage image) {
+        Tab tab = new Tab(tabName);
         tab.setOnCloseRequest(getTabOnCloseRequestEvent());
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
@@ -233,8 +242,6 @@ public class MainSceneController {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
         }
-        float[] data = colorSpace.toRGB(image.getData());
-        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
     private Tab getActiveTab() {
@@ -317,5 +324,22 @@ public class MainSceneController {
         } else {
             displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
+    }
+
+    public void generateGradient() {
+        SizeInputDialog gradientSizeInputDialog = new SizeInputDialog();
+        Pair<Integer, Integer> size = gradientSizeInputDialog.showAndWait().orElse(null);
+        if(size == null || size.getKey() == null || size.getValue() == null){
+            return;
+        }
+        Integer width = size.getKey();
+        Integer height = size.getValue();
+        byte[] buffer = GradientGenerator.generateGradient(width, height);
+        GrafixImage grafixImage = new GrafixImage("P5", width, height, 255, FbConverter.convertBytesToFloat(buffer, 255), null, 0, new RGB());
+        openTab("Gradient", grafixImage);
+        displayImageP5(buffer, width, height);
+    }
+
+    public void openEmptyTab(ActionEvent actionEvent) {
     }
 }
