@@ -355,25 +355,22 @@ public class MainSceneController {
         CheckBox preview = new CheckBox("Preview");
         DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
         float[] imageBytes = image.getData();
-        float[] previewImageBytes = imageBytes;
         preview.setOnAction(event -> {
             Dithering dithering = dialog.getDitheringSelection().getValue();
-            System.out.println(5);
             if (dithering == null) {
-                System.out.println(5555);
                 return;
             }
             Integer bitDepth = dialog.getBitDepthSelection().getValue();
             float[] data = (preview.isSelected())
-                    ? dithering.convert(previewImageBytes, image.getWidth(), image.getHeight(), bitDepth)
-                    : previewImageBytes;
+                    ? applyDithering(dithering, image, bitDepth)
+                    : image.getData();
             displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
         });
         dialog.getDitheringSelection().setOnAction(event -> changeDitheringPreview(preview));
         dialog.getBitDepthSelection().setOnAction(event -> changeDitheringPreview(preview));
         Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
         if (ditheringModel != null && ditheringModel.getKey() != null) {
-            imageBytes = ditheringModel.getKey().convert(imageBytes, image.getWidth(), image.getHeight(), ditheringModel.getValue());
+            imageBytes = applyDithering(ditheringModel.getKey(), image, ditheringModel.getValue());
             image.setData(imageBytes);
         }
         displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
@@ -385,6 +382,13 @@ public class MainSceneController {
         }
         preview.setSelected(false);
         preview.fire();
+    }
+
+    private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth){
+        float[] data =  image.getColorSpace().toRGB(image.getData());
+        data = dithering.convert(GammaCorrecter.restoreGamma(image.getGamma(), data), image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
+//        data = GammaCorrecter.convertGamma(image.getGamma(), 1, data);
+        return image.getColorSpace().fromRGB(data);
     }
 
 }

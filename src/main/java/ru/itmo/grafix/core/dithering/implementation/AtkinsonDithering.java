@@ -13,7 +13,7 @@ public class AtkinsonDithering extends Dithering {
     }
 
     @Override
-    public float[] convert(float[] data, int width, int height, int bitDepth) {
+    public float[] convert(float[] data, int width, int height, int bitDepth, float gamma) {
         float[] buffer = new float[data.length];
         int bytesPerPixel = data.length / (width * height);
         BiFunction<Integer, Integer, Integer> getRowColumnIndex = (i, j) -> bytesPerPixel * (i * width + j);
@@ -23,7 +23,7 @@ public class AtkinsonDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
                     float oldPixel = buffer[index] + data[index];
-                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth);
+                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f);
                     buffer[index] = newPixel;
                     float errFactor = (oldPixel - newPixel) * factor;
                     for (int[] diDj : errorRowColumnAdjustments) {
