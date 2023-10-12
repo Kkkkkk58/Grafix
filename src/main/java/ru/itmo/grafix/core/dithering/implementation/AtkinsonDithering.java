@@ -7,22 +7,22 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class AtkinsonDithering extends Dithering {
-    int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 1}, {2, 0}, {1, 0}};
+    private final int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 0}, {1, 1}, {2, 0}};
     public AtkinsonDithering() {
         super(DitheringType.ATKINSON);
     }
 
     @Override
     public float[] convert(float[] data, int width, int height, int bitDepth) {
-        float[] buffer = Arrays.copyOf(data, data.length);
+        float[] buffer = new float[data.length];
         int bytesPerPixel = data.length / (width * height);
         BiFunction<Integer, Integer, Integer> getRowColumnIndex = (i, j) -> bytesPerPixel * (i * width + j);
-        float factor = 1f / 8f;
+        float factor = 1 / 8f;
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
-                    float oldPixel = buffer[index];
+                    float oldPixel = buffer[index] + data[index];
                     float newPixel = getNearestPaletteColor(oldPixel, bitDepth);
                     buffer[index] = newPixel;
                     float errFactor = (oldPixel - newPixel) * factor;
