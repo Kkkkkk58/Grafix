@@ -358,7 +358,9 @@ public class MainSceneController {
         float[] previewImageBytes = imageBytes;
         preview.setOnAction(event -> {
             Dithering dithering = dialog.getDitheringSelection().getValue();
+            System.out.println(5);
             if (dithering == null) {
+                System.out.println(5555);
                 return;
             }
             Integer bitDepth = dialog.getBitDepthSelection().getValue();
@@ -367,7 +369,8 @@ public class MainSceneController {
                     : previewImageBytes;
             displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
         });
-
+        dialog.getDitheringSelection().setOnAction(event -> changeDitheringPreview(preview));
+        dialog.getBitDepthSelection().setOnAction(event -> changeDitheringPreview(preview));
         Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
         if (ditheringModel != null && ditheringModel.getKey() != null) {
             imageBytes = ditheringModel.getKey().convert(imageBytes, image.getWidth(), image.getHeight(), ditheringModel.getValue());
@@ -375,4 +378,13 @@ public class MainSceneController {
         }
         displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
     }
+
+    private static void changeDitheringPreview(CheckBox preview) {
+        if(!preview.isSelected()){
+            return;
+        }
+        preview.setSelected(false);
+        preview.fire();
+    }
+
 }

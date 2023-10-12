@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class AtkinsonDithering extends Dithering {
-    int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 1}, {2, 0}};
+    int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 1}, {2, 0}, {1, 0}};
     public AtkinsonDithering() {
         super(DitheringType.ATKINSON);
     }
@@ -17,7 +17,7 @@ public class AtkinsonDithering extends Dithering {
         float[] buffer = Arrays.copyOf(data, data.length);
         int bytesPerPixel = data.length / (width * height);
         BiFunction<Integer, Integer, Integer> getRowColumnIndex = (i, j) -> bytesPerPixel * (i * width + j);
-        float factor = 1 / 8f;
+        float factor = 1f / 8f;
         for (int i = 0; i < height; ++i) {
             for (int j = 0; j < width; ++j) {
                 for (int k = 0; k < bytesPerPixel; ++k) {
