@@ -12,8 +12,8 @@ public class SizeInputDialog extends Dialog<Pair<Integer, Integer>> {
         setHeaderText("Choose the size");
         setGraphic(null);
         GridPane gridPane = new GridPane();
-        TextField width = new TextField("256");
-        TextField height = new TextField("256");
+        TextField width = new TextField("1920");
+        TextField height = new TextField("1080");
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.add(new Label("Width"), 0, 0);

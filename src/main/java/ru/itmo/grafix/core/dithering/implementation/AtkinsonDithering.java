@@ -2,6 +2,7 @@ package ru.itmo.grafix.core.dithering.implementation;
 
 import ru.itmo.grafix.core.dithering.Dithering;
 import ru.itmo.grafix.core.dithering.DitheringType;
+import ru.itmo.grafix.core.imageprocessing.GammaCorrecter;
 
 import java.util.Arrays;
 import java.util.function.BiFunction;
@@ -23,8 +24,9 @@ public class AtkinsonDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
                     float oldPixel = buffer[index] + data[index];
-                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f);
+                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f, true);
                     buffer[index] = newPixel;
+//                    newPixel = GammaCorrecter.getReversedGamma(newPixel ,gamma);
                     float errFactor = (oldPixel - newPixel) * factor;
                     for (int[] diDj : errorRowColumnAdjustments) {
                         int di = diDj[0];

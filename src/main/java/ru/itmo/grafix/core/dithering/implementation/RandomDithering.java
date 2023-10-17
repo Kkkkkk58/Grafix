@@ -21,7 +21,7 @@ public class RandomDithering extends Dithering {
             for (int k = 0; k < step; ++k) {
                 float threshold = rand.nextFloat();
 //                float value = (float) (data[i + k] + (threshold - 0.5) / bitDepth);
-                buffer[i + k] = getNearestPaletteColor(data[i + k], bitDepth, gamma, threshold);
+                buffer[i + k] = getNearestPaletteColor(data[i + k], bitDepth, gamma, threshold, false);
             }
         }
 

@@ -29,7 +29,7 @@ public class OrderedDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = i * width * bytesPerPixel + j + k;
                     float value = data[index] + (MATRIX[i % MATRIX.length][j % MATRIX.length] - 0.5f) / bitDepth;
-                    buffer[index] = getNearestPaletteColor(data[index], bitDepth, gamma, MATRIX[i % MATRIX.length][j % MATRIX.length]);
+                    buffer[index] = getNearestPaletteColor(data[index], bitDepth, gamma, MATRIX[i % MATRIX.length][j % MATRIX.length], false);
                 }
             }
         }
