@@ -21,7 +21,7 @@ public class OrderedDithering extends Dithering {
     }
 
     @Override
-    public float[] convert(float[] data, int width, int height, int bitDepth) {
+    public float[] convert(float[] data, int width, int height, int bitDepth, float gamma) {
         float[] buffer = new float[data.length];
         int bytesPerPixel = data.length / (width * height);
         for (int i = 0; i < height; ++i) {
@@ -29,7 +29,7 @@ public class OrderedDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = i * width * bytesPerPixel + j + k;
                     float value = data[index] + (MATRIX[i % MATRIX.length][j % MATRIX.length] - 0.5f) / bitDepth;
-                    buffer[index] = getNearestPaletteColor(value, bitDepth);
+                    buffer[index] = getNearestPaletteColor(data[index], bitDepth, gamma, MATRIX[i % MATRIX.length][j % MATRIX.length], false);
                 }
             }
         }
