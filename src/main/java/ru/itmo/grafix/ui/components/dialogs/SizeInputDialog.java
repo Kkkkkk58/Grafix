@@ -12,8 +12,8 @@ public class SizeInputDialog extends Dialog<Pair<Integer, Integer>> {
         setHeaderText("Choose the size");
         setGraphic(null);
         GridPane gridPane = new GridPane();
-        TextField width = new TextField("256");
-        TextField height = new TextField("256");
+        TextField width = new TextField("1920");
+        TextField height = new TextField("1080");
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.add(new Label("Width"), 0, 0);
@@ -21,7 +21,6 @@ public class SizeInputDialog extends Dialog<Pair<Integer, Integer>> {
         gridPane.add(new Label("Height"), 0, 1);
         gridPane.add(height, 1, 1);
         getDialogPane().setContent(gridPane);
-        ButtonType confirmSize = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
         setResultConverter(button -> {
                     try {

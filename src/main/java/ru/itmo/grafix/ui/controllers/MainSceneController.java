@@ -16,6 +16,7 @@ import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
 import ru.itmo.grafix.core.dithering.Dithering;
+import ru.itmo.grafix.core.dithering.DitheringType;
 import ru.itmo.grafix.core.dithering.implementation.AtkinsonDithering;
 import ru.itmo.grafix.core.dithering.implementation.FloydSteinbergDithering;
 import ru.itmo.grafix.core.dithering.implementation.OrderedDithering;
@@ -348,6 +349,48 @@ public class MainSceneController {
     }
 
     public void chooseDithering() {
-        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods);
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        CheckBox preview = new CheckBox("Preview");
+        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
+        float[] imageBytes = image.getData();
+        preview.setOnAction(event -> {
+            Dithering dithering = dialog.getDitheringSelection().getValue();
+            if (dithering == null) {
+                return;
+            }
+            Integer bitDepth = dialog.getBitDepthSelection().getValue();
+            float[] data = (preview.isSelected())
+                    ? applyDithering(dithering, image, bitDepth)
+                    : image.getData();
+            displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+        });
+        dialog.getDitheringSelection().setOnAction(event -> changeDitheringPreview(preview));
+        dialog.getBitDepthSelection().setOnAction(event -> changeDitheringPreview(preview));
+        Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
+        if (ditheringModel != null && ditheringModel.getKey() != null) {
+            imageBytes = applyDithering(ditheringModel.getKey(), image, ditheringModel.getValue());
+            image.setData(imageBytes);
+        }
+        displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
     }
+
+    private static void changeDitheringPreview(CheckBox preview) {
+        if(!preview.isSelected()){
+            return;
+        }
+        preview.setSelected(false);
+        preview.fire();
+    }
+
+    private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth){
+        float[] data =  image.getColorSpace().toRGB(image.getData());
+        data = GammaCorrecter.restoreGamma(image.getGamma(), data);
+        data = dithering.convert(data, image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
+//        data = GammaCorrecter.restoreGamma(image.getGamma(),  data);
+        return image.getColorSpace().fromRGB(data);
+    }
+
 }
