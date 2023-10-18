@@ -26,7 +26,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         if (x0 > x1) {
             drawLine(grafixImage, endPoint, beginPoint, drawingParams);
         }
-        float[] buff = grafixImage.getData();
+        float[] buff = grafixImage.getColorSpace().toRGB(grafixImage.getData());
         double dx = x1 - x0;
         double dy = y1 - y0;
         double gradient = (dx == 0) ? 1.0 : dy / dx;
