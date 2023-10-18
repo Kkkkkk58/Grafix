@@ -16,13 +16,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
+import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
 import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
-import ru.itmo.grafix.ui.components.dialogs.ColorSpaceChoiceDialog;
-import ru.itmo.grafix.ui.components.dialogs.DrawingParamsChoiceDialog;
-import ru.itmo.grafix.ui.components.dialogs.GammaInputDialog;
-import ru.itmo.grafix.ui.components.dialogs.ImageSavingBeforeClosingConfirmationAlert;
+import ru.itmo.grafix.ui.components.dialogs.*;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 import ru.itmo.grafix.ui.models.DrawingParams;
 import ru.itmo.grafix.ui.models.Point;
@@ -344,25 +342,30 @@ public class MainSceneController {
             return;
         }
         TabContext tabContext = tabMapping.get(activeTab.getId());
-        DrawingParamsChoiceDialog drawingParamsChoiceDialog = new DrawingParamsChoiceDialog();
+        tabContext.setBeginPoint(null);
+        DrawingParamsChoiceDialog drawingParamsChoiceDialog = getDrawingParamsChoiceDialog(tabContext.getImage().getFormat());
         DrawingParams params = drawingParamsChoiceDialog.showAndWait().orElse(null);
         ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
         tabContext.setDrawingContext(params);
         ImageView imageView = getImageViewFromScrollPane(scrollPane);
-        imageView.setOnMouseClicked(e -> {
-            getCoordinatesOnDrawMode(e, tabContext);
-        });
+        imageView.setOnMouseClicked(e -> getCoordinatesOnDrawMode(e, tabContext));
     }
 
+    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format){
+        if(Objects.equals(format, "P5")){
+            return new P5DrawingParamsChoiceDialog();
+        }
+        return new P6DrawingParamsChoiceDialog();
+    }
     private void getCoordinatesOnDrawMode(MouseEvent e, TabContext tabContext) {
         if (tabContext.getBeginPoint() == null) {
             tabContext.setBeginPoint(new Point(e.getX(), e.getY()));
         } else {
-            float[] buff = WuAlgorithm.drawLine(tabContext.getImage(), tabContext.getBeginPoint(), new Point(e.getX(), e.getY()), tabContext.getDrawingContext());
-            ImageView iv = displayImageP6(FbConverter.convertFloatToByte(buff), tabContext.getImage().getWidth(), tabContext.getImage().getHeight());
-            iv.setOnMouseClicked(event -> {
-                getCoordinatesOnDrawMode(event, tabContext);
-            });
+            DrawingAlgorithm algo = new WuAlgorithm();
+            GrafixImage image = tabContext.getImage();
+            float[] buff = algo.drawLine(image, tabContext.getBeginPoint(), new Point(e.getX(), e.getY()), tabContext.getDrawingContext());
+            ImageView iv = displayImage(image.getFormat(), buff, image.getWidth(), image.getHeight());
+            iv.setOnMouseClicked(event -> getCoordinatesOnDrawMode(event, tabContext));
             tabContext.setBeginPoint(null);
         }
         System.out.println(e.getX());
@@ -373,6 +376,7 @@ public class MainSceneController {
         if (activeTab == null) {
             return;
         }
+
         ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
         getImageViewFromScrollPane(scrollPane).setOnMouseClicked(null);
     }
