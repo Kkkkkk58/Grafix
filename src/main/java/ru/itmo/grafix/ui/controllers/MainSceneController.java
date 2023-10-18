@@ -67,7 +67,7 @@ public class MainSceneController {
             ColorSpace colorSpace = image.getColorSpace();
             wasColorSpaceChanged = false;
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
-            channelList.setValue(image.getChannel());
+            channelList.setValue(image.getChannel() == 0 ? "all" : String.valueOf(image.getChannel()));
             wasColorSpaceChanged = true;
         }));
     }
@@ -364,7 +364,8 @@ public class MainSceneController {
             DrawingAlgorithm algo = new WuAlgorithm();
             GrafixImage image = tabContext.getImage();
             float[] buff = algo.drawLine(image, tabContext.getBeginPoint(), new Point(e.getX(), e.getY()), tabContext.getDrawingContext());
-            ImageView iv = displayImage(image.getFormat(), buff, image.getWidth(), image.getHeight());
+            image.setData(image.getColorSpace().fromRGB(buff));
+            ImageView iv = displayImage(image.getFormat(), image.getColorSpace().toRGB(ChannelDecomposer.decompose(image.getData(), image.getChannel(), image.getColorSpace())), image.getWidth(), image.getHeight());
             iv.setOnMouseClicked(event -> getCoordinatesOnDrawMode(event, tabContext));
             tabContext.setBeginPoint(null);
         }
