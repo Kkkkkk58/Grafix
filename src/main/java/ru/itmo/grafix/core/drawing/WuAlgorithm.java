@@ -7,6 +7,53 @@ import ru.itmo.grafix.ui.models.Point;
 public class WuAlgorithm implements DrawingAlgorithm {
 
     public float[] drawLine(GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
+        float[] buff = grafixImage.getColorSpace().toRGB(grafixImage.getData());
+        if (Math.abs(drawingParams.getThickness() - 1.0) < 1e-6) {
+            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams);
+            return buff;
+        }
+
+        // Calculating rectangle points
+        double dx = endPoint.getX() - beginPoint.getX();
+        double dy = endPoint.getY() - beginPoint.getY();
+        double gradient = (dx == 0) ? 1.0 : dy / dx;
+        double perpGradient = -1 / gradient;
+        double yIntersect = beginPoint.getY() - perpGradient * beginPoint.getX();
+        double r = drawingParams.getThickness() / 2.0;
+        double factor = Math.sqrt(r * r / (1 + perpGradient * perpGradient));
+        double aX = beginPoint.getX() + factor;
+        double bX = beginPoint.getX() - factor;
+        double aY = perpGradient * aX + yIntersect;
+        double bY = perpGradient * bX + yIntersect;
+        double deltaX = Math.abs(beginPoint.getX() - aX);
+        yIntersect = endPoint.getY() - perpGradient * endPoint.getX();
+        double cX = endPoint.getX() - deltaX;
+        double dX = endPoint.getX() + deltaX;
+        double cY = perpGradient * cX + yIntersect;
+        double dY = perpGradient * dX + yIntersect;
+        Point a = new Point(aX, aY);
+        Point b = new Point(bX, bY);
+        Point c = new Point(cX, cY);
+        Point d = new Point(dX, dY);
+
+        // Drawing rectangle contour
+        drawLineWith1Thickness(buff, grafixImage, a, b, drawingParams);
+        drawLineWith1Thickness(buff, grafixImage, b, c, drawingParams);
+        drawLineWith1Thickness(buff, grafixImage, c, d, drawingParams);
+        drawLineWith1Thickness(buff, grafixImage, d, a, drawingParams);
+
+        // Drawing inside lines
+        double abDistance = Math.abs((aX * aX + bY * bY) - (bX * bX + bY * bY));
+        double step = abDistance / drawingParams.getThickness();
+        for (float i = drawingParams.getThickness(); i > 1e-6; --i) {
+            drawLineWith1Thickness(buff, grafixImage, a, d, drawingParams);
+            d = getPointWithRDistanceFromBeginning(d, c, step);
+            a = getPointWithRDistanceFromBeginning(a, b, step);
+        }
+
+        return buff;
+    }
+    public void drawLineWith1Thickness(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
         double x0 = beginPoint.getX();
         double x1 = endPoint.getX();
         double y0 = beginPoint.getY();
@@ -24,9 +71,8 @@ public class WuAlgorithm implements DrawingAlgorithm {
         }
 
         if (x0 > x1) {
-            drawLine(grafixImage, endPoint, beginPoint, drawingParams);
+            drawLineWith1Thickness(buff, grafixImage, endPoint, beginPoint, drawingParams);
         }
-        float[] buff = grafixImage.getColorSpace().toRGB(grafixImage.getData());
         double dx = x1 - x0;
         double dy = y1 - y0;
         double gradient = (dx == 0) ? 1.0 : dy / dx;
@@ -68,7 +114,6 @@ public class WuAlgorithm implements DrawingAlgorithm {
             }
             intersectionY += gradient;
         }
-        return buff;
     }
 
     private double fractionPart(double param) {
@@ -90,5 +135,22 @@ public class WuAlgorithm implements DrawingAlgorithm {
 
     private float blendColors(float bgColor, float color, double intensity) {
         return (float) ((1 - intensity) * bgColor + intensity * color);
+    }
+
+    private Point getPointWithRDistanceFromBeginning(Point beginPoint, Point endPoint, double r) {
+        double dx = endPoint.getX() - beginPoint.getX();
+        double dy = endPoint.getY() - beginPoint.getY();
+        double gradient = (dx == 0) ? 1.0 : dy / dx;
+        double yIntersect = beginPoint.getY() - gradient * beginPoint.getX();
+        double factor = Math.sqrt(r * r / (1 + gradient * gradient));
+        double aX = beginPoint.getX() + factor;
+        double aY = gradient * aX + yIntersect;
+        double distanceToEnd = Math.pow(endPoint.getX(), 2) + Math.pow(endPoint.getY(), 2);
+        double distanceToBeginning = Math.pow(beginPoint.getX(), 2) + Math.pow(beginPoint.getY(), 2);
+        if (Math.abs(distanceToEnd - distanceToBeginning) < Math.abs(distanceToEnd - (aX * aX + aY * aY))) {
+            aX = beginPoint.getX() - factor;
+            aY = gradient * aX + yIntersect;
+        }
+        return new Point(aX, aY);
     }
 }
