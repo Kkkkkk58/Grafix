@@ -364,8 +364,9 @@ public class MainSceneController {
             DrawingAlgorithm algo = new WuAlgorithm();
             GrafixImage image = tabContext.getImage();
             float[] buff = algo.drawLine(image, tabContext.getBeginPoint(), new Point(e.getX(), e.getY()), tabContext.getDrawingContext());
-            image.setData(image.getColorSpace().fromRGB(buff));
-            ImageView iv = displayImage(image.getFormat(), image.getColorSpace().toRGB(ChannelDecomposer.decompose(image.getData(), image.getChannel(), image.getColorSpace())), image.getWidth(), image.getHeight());
+            image.setData(image.getColorSpace().fromRGB(GammaCorrecter.convertGamma(image.getGamma(), 1, buff)));
+            buff = image.getColorSpace().fromRGB(buff);
+            ImageView iv = displayImage(image.getFormat(), image.getColorSpace().toRGB(ChannelDecomposer.decompose(buff, image.getChannel(), image.getColorSpace())), image.getWidth(), image.getHeight());
             iv.setOnMouseClicked(event -> getCoordinatesOnDrawMode(event, tabContext));
             tabContext.setBeginPoint(null);
         }

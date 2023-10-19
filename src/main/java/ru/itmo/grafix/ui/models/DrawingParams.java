@@ -2,6 +2,7 @@ package ru.itmo.grafix.ui.models;
 
 public class DrawingParams {
     private float thickness;
+
     private byte[] color;
     private float opacity;
     public DrawingParams(float thickness, byte[] color, float opacity) {
@@ -22,5 +23,8 @@ public class DrawingParams {
         return opacity;
     }
 
+    public void setColor(byte[] color) {
+        this.color = color;
+    }
 
 }
