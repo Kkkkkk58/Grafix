@@ -68,11 +68,8 @@ public class GrafixImage {
         return colorSpace;
     }
 
-    public String getChannel() {
-        if (channel == 0) {
-            return "all";
-        }
-        return String.valueOf(channel);
+    public int getChannel() {
+        return channel;
     }
 
     public float getGamma() {

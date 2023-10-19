@@ -6,11 +6,14 @@ import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
@@ -21,10 +24,15 @@ import ru.itmo.grafix.core.dithering.implementation.AtkinsonDithering;
 import ru.itmo.grafix.core.dithering.implementation.FloydSteinbergDithering;
 import ru.itmo.grafix.core.dithering.implementation.OrderedDithering;
 import ru.itmo.grafix.core.dithering.implementation.RandomDithering;
+import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
+import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.ui.components.dialogs.*;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
+import ru.itmo.grafix.ui.models.DrawingParams;
+import ru.itmo.grafix.ui.models.Point;
+import ru.itmo.grafix.ui.models.TabContext;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -57,22 +65,25 @@ public class MainSceneController {
                 return;
             }
             String id = newValue.getId();
-            GrafixImage image = tabMapping.get(id);
-            if (image == null) {
+            if (!tabMapping.containsKey(id)) {
                 return;
             }
+            GrafixImage image = tabMapping.get(id).getImage();
+//            if (image == null) {
+//                return;
+//            }
             channelList.setVisible(!Objects.equals(image.getFormat(), "P5"));
             colorSpaceList.setVisible(!Objects.equals(image.getFormat(), "P5"));
             ColorSpace colorSpace = image.getColorSpace();
             wasColorSpaceChanged = false;
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
-            channelList.setValue(image.getChannel());
+            channelList.setValue(image.getChannel() == 0 ? "all" : String.valueOf(image.getChannel()));
             wasColorSpaceChanged = true;
         }));
     }
 
     private final ImageProcessorService imageProcessorService;
-    private final Map<String, GrafixImage> tabMapping = new HashMap<>();
+    private final Map<String, TabContext> tabMapping = new HashMap<>();
 
     public MainSceneController() {
         imageProcessorService = new ImageProcessorServiceImpl();
@@ -213,7 +224,7 @@ public class MainSceneController {
             return null;
         }
         String activeTabId = activeTab.getId();
-        return tabMapping.get(activeTabId);
+        return tabMapping.get(activeTabId).getImage();
     }
 
     private void doSave(String absolutePath, GrafixImage image) {
@@ -238,7 +249,7 @@ public class MainSceneController {
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
-        tabMapping.put(tabId, image);
+        tabMapping.put(tabId, new TabContext(image, null, null));
         tabPane.getSelectionModel().select(tab);
         if (image.getFormat().charAt(1) == '5') {
             channelList.setVisible(false);
@@ -295,39 +306,40 @@ public class MainSceneController {
         return file;
     }
 
-    private void displayImageP6(byte[] data, int width, int height) {
+    private ImageView displayImageP6(byte[] data, int width, int height) {
         WritableImage img = new WritableImage(width, height);
         PixelWriter writer = img.getPixelWriter();
         PixelFormat<ByteBuffer> pf = PixelFormat.getByteRgbInstance();
         writer.setPixels(0, 0, width, height, pf, data, 0, width * 3);
-        setImage(img);
+        return setImage(img);
     }
 
-    private void displayImageP5(byte[] data, int width, int height) {
+    private ImageView displayImageP5(byte[] data, int width, int height) {
         BufferedImage img = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_GRAY);
         img.getRaster().setDataElements(0, 0, width, height, data);
         WritableImage img2 = new WritableImage(width, height);
         SwingFXUtils.toFXImage(img, img2);
-        setImage(img2);
+        return setImage(img2);
     }
 
-    private void setImage(WritableImage img) {
+    private ImageView setImage(WritableImage img) {
         ImageView imageView = new ImageView(img);
         ZoomableScrollPane scrP = new ZoomableScrollPane();
         scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         getActiveTab().setContent(scrP);
         scrP.setTarget(imageView);
+        return imageView;
     }
 
     private ColorSpace getDefaultColorSpace() {
         return colorSpaceList.getItems().get(0);
     }
 
-    private void displayImage(String format, float[] data, int width, int height) {
+    private ImageView displayImage(String format, float[] data, int width, int height) {
         if (Objects.equals(format, "P6")) {
-            displayImageP6(FbConverter.convertFloatToByte(data), width, height);
+            return displayImageP6(FbConverter.convertFloatToByte(data), width, height);
         } else {
-            displayImageP5(FbConverter.convertFloatToByte(data), width, height);
+            return displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
     }
 
@@ -393,4 +405,57 @@ public class MainSceneController {
         return image.getColorSpace().fromRGB(data);
     }
 
+    private ImageView getImageViewFromScrollPane(ScrollPane scrollPane) {
+        VBox vbox = (VBox) scrollPane.getContent();
+        Group group = (Group) vbox.getChildren().get(0);
+
+        return (ImageView) group.getChildren().get(0);
+    }
+
+    public void selectDrawingParams() {
+        Tab activeTab = getActiveTab();
+        if (activeTab == null) {
+            return;
+        }
+        TabContext tabContext = tabMapping.get(activeTab.getId());
+        tabContext.setBeginPoint(null);
+        DrawingParamsChoiceDialog drawingParamsChoiceDialog = getDrawingParamsChoiceDialog(tabContext.getImage().getFormat());
+        DrawingParams params = drawingParamsChoiceDialog.showAndWait().orElse(null);
+        ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
+        tabContext.setDrawingContext(params);
+        ImageView imageView = getImageViewFromScrollPane(scrollPane);
+        imageView.setOnMouseClicked(e -> getCoordinatesOnDrawMode(e, tabContext));
+    }
+
+    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format){
+        if(Objects.equals(format, "P5")){
+            return new P5DrawingParamsChoiceDialog();
+        }
+        return new P6DrawingParamsChoiceDialog();
+    }
+    private void getCoordinatesOnDrawMode(MouseEvent e, TabContext tabContext) {
+        if (tabContext.getBeginPoint() == null) {
+            tabContext.setBeginPoint(new Point(e.getX(), e.getY()));
+        } else {
+            DrawingAlgorithm algo = new WuAlgorithm();
+            GrafixImage image = tabContext.getImage();
+            float[] buff = algo.drawLine(image, tabContext.getBeginPoint(), new Point(e.getX(), e.getY()), tabContext.getDrawingContext());
+            image.setData(image.getColorSpace().fromRGB(GammaCorrecter.convertGamma(image.getGamma(), 1, buff)));
+            buff = image.getColorSpace().fromRGB(buff);
+            ImageView iv = displayImage(image.getFormat(), image.getColorSpace().toRGB(ChannelDecomposer.decompose(buff, image.getChannel(), image.getColorSpace())), image.getWidth(), image.getHeight());
+            iv.setOnMouseClicked(event -> getCoordinatesOnDrawMode(event, tabContext));
+            tabContext.setBeginPoint(null);
+        }
+        System.out.println(e.getX());
+    }
+
+    public void unsetDrawMode() {
+        Tab activeTab = getActiveTab();
+        if (activeTab == null) {
+            return;
+        }
+
+        ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
+        getImageViewFromScrollPane(scrollPane).setOnMouseClicked(null);
+    }
 }
