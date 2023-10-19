@@ -2,6 +2,7 @@ package ru.itmo.grafix.ui.controllers;
 
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -14,8 +15,15 @@ import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
+import ru.itmo.grafix.core.dithering.Dithering;
+import ru.itmo.grafix.core.dithering.DitheringType;
+import ru.itmo.grafix.core.dithering.implementation.AtkinsonDithering;
+import ru.itmo.grafix.core.dithering.implementation.FloydSteinbergDithering;
+import ru.itmo.grafix.core.dithering.implementation.OrderedDithering;
+import ru.itmo.grafix.core.dithering.implementation.RandomDithering;
 import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
 import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.image.GrafixImage;
@@ -44,6 +52,8 @@ public class MainSceneController {
     private boolean isEndlessLoop = false;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
+    private final List<Dithering> ditheringMethods = List.of(new AtkinsonDithering(), new OrderedDithering(), new RandomDithering(),
+            new FloydSteinbergDithering());
 
     public void initialize() {
         channelList.getSelectionModel().selectLast();
@@ -228,7 +238,13 @@ public class MainSceneController {
 
     private void doOpen(String absolutePath, String fileName, ColorSpace colorSpace) {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
-        Tab tab = new Tab(fileName);
+        openTab(fileName, image);
+        float[] data = colorSpace.toRGB(image.getData());
+        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+    }
+
+    private void openTab(String tabName, GrafixImage image) {
+        Tab tab = new Tab(tabName);
         tab.setOnCloseRequest(getTabOnCloseRequestEvent());
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
@@ -242,8 +258,6 @@ public class MainSceneController {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
         }
-        float[] data = colorSpace.toRGB(image.getData());
-        displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
     private Tab getActiveTab() {
@@ -327,6 +341,68 @@ public class MainSceneController {
         } else {
             return displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
+    }
+
+    public void generateGradient() {
+        SizeInputDialog gradientSizeInputDialog = new SizeInputDialog();
+        Pair<Integer, Integer> size = gradientSizeInputDialog.showAndWait().orElse(null);
+        if (size == null || size.getKey() == null || size.getValue() == null) {
+            return;
+        }
+        Integer width = size.getKey();
+        Integer height = size.getValue();
+        byte[] buffer = GradientGenerator.generateGradient(width, height);
+        GrafixImage grafixImage = new GrafixImage("P5", width, height, 255, FbConverter.convertBytesToFloat(buffer, 255), null, 0, new RGB());
+        openTab("Gradient", grafixImage);
+        displayImageP5(buffer, width, height);
+    }
+
+    public void openEmptyTab(ActionEvent actionEvent) {
+    }
+
+    public void chooseDithering() {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        CheckBox preview = new CheckBox("Preview");
+        DitheringChoiceDialog dialog = new DitheringChoiceDialog(ditheringMethods, preview);
+        float[] imageBytes = image.getData();
+        preview.setOnAction(event -> {
+            Dithering dithering = dialog.getDitheringSelection().getValue();
+            if (dithering == null) {
+                return;
+            }
+            Integer bitDepth = dialog.getBitDepthSelection().getValue();
+            float[] data = (preview.isSelected())
+                    ? applyDithering(dithering, image, bitDepth)
+                    : image.getData();
+            displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
+        });
+        dialog.getDitheringSelection().setOnAction(event -> changeDitheringPreview(preview));
+        dialog.getBitDepthSelection().setOnAction(event -> changeDitheringPreview(preview));
+        Pair<Dithering, Integer> ditheringModel = dialog.showAndWait().orElse(null);
+        if (ditheringModel != null && ditheringModel.getKey() != null) {
+            imageBytes = applyDithering(ditheringModel.getKey(), image, ditheringModel.getValue());
+            image.setData(imageBytes);
+        }
+        displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
+    }
+
+    private static void changeDitheringPreview(CheckBox preview) {
+        if(!preview.isSelected()){
+            return;
+        }
+        preview.setSelected(false);
+        preview.fire();
+    }
+
+    private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth){
+        float[] data =  image.getColorSpace().toRGB(image.getData());
+        data = GammaCorrecter.restoreGamma(image.getGamma(), data);
+        data = dithering.convert(data, image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
+//        data = GammaCorrecter.restoreGamma(image.getGamma(),  data);
+        return image.getColorSpace().fromRGB(data);
     }
 
     private ImageView getImageViewFromScrollPane(ScrollPane scrollPane) {

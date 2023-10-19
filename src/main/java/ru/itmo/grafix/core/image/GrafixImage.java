@@ -33,7 +33,7 @@ public class GrafixImage {
         this.headerSize = headerSize;
         this.colorSpace = colorSpace;
         this.channel = 0;
-        this.gamma = 0f;
+        this.gamma = 1f;
     }
 
     public String getFormat() {
