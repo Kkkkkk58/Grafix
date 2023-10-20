@@ -4,7 +4,6 @@ import ru.itmo.grafix.core.dithering.Dithering;
 import ru.itmo.grafix.core.dithering.DitheringType;
 import ru.itmo.grafix.core.imageprocessing.GammaCorrecter;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class FloydSteinbergDithering extends Dithering {
@@ -26,17 +25,17 @@ public class FloydSteinbergDithering extends Dithering {
 //                    if (Float.isNaN(buffer[index])) {
 //                        System.out.printf("NaN buffer[%d]\n",index);
 //                    }
-                    float oldPixel = GammaCorrecter.getConvertedValue(gamma, GammaCorrecter.getReversedGamma(data[index], gamma) + buffer[index]);
+                    float oldPixel = GammaCorrecter.getReversedGamma(data[index], gamma) + buffer[index];
                     float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f, true);
 //                    if (Float.isNaN(newPixel)) {
 //                        System.out.printf("NaN NEWPIXEL %d\n", index);
 //                        System.exit(0);
 //                    }
-                    buffer[index] = GammaCorrecter.getReversedGamma(newPixel, gamma);
+                    buffer[index] = newPixel;
 //                    newPixel = GammaCorrecter.getReversedGamma(newPixel ,gamma);
                     for (int factorInd = 0; factorInd < factors.length; ++factorInd) {
                         int[] diDj = errorRowColumnAdjustments[factorInd];
-                        float errFactor = (GammaCorrecter.getReversedGamma(oldPixel, gamma)
+                        float errFactor = (oldPixel
                                 - GammaCorrecter.getReversedGamma(newPixel, gamma)) * factors[factorInd];
                         int di = diDj[0];
                         int dj = diDj[1];
