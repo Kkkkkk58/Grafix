@@ -15,12 +15,31 @@ public class WuAlgorithm implements DrawingAlgorithm {
             return buff;
         }
 
-        if (drawingParams.getThickness() < 1) {
-            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams, drawingParams.getThickness());
-            return buff;
-        }
+//        if (drawingParams.getThickness() < 1) {
+//            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams, drawingParams.getThickness());
+//            return buff;
+//        }
 
-        // Calculating rectangle points
+        // DOESNOT WORK
+//        if (endPoint.getY() - beginPoint.getY() / (endPoint.getX() - beginPoint.getX()) < 1) {
+//            double wy = (drawingParams.getThickness() - 1) * Math.sqrt(Math.pow(endPoint.getX() - beginPoint.getX(), 2) + Math.pow(endPoint.getY() - beginPoint.getY(), 2)) / (2 * Math.abs(endPoint.getX() - beginPoint.getX()));
+//            for (double i = 0; i < wy; i++) {
+//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX(), beginPoint.getY() - i), new Point(endPoint.getX(), endPoint.getY() - i), drawingParams, 1);
+//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX(), beginPoint.getY() + i), new Point(endPoint.getX(), endPoint.getY() + i), drawingParams, 1);
+//            }
+//        } else {
+//            double wx = (drawingParams.getThickness() - 1) * Math.sqrt(Math.pow(endPoint.getX() - beginPoint.getX(), 2) + Math.pow(endPoint.getY() - beginPoint.getY(), 2)) / (2 * Math.abs(endPoint.getY() - beginPoint.getY()));
+//            for (double i = 0; i < wx; i++) {
+//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX() - i, beginPoint.getY()), new Point(endPoint.getX() - i, endPoint.getY()), drawingParams, 1);
+//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX() + i, beginPoint.getY()), new Point(endPoint.getX() + i, endPoint.getY()), drawingParams, 1);
+//            }
+//        }
+//
+//        return buff;
+
+
+
+         // Calculating rectangle points
         double dx = endPoint.getX() - beginPoint.getX();
         double dy = endPoint.getY() - beginPoint.getY();
         double gradient = (dx == 0) ? 1.0 : dy / dx;
@@ -42,52 +61,59 @@ public class WuAlgorithm implements DrawingAlgorithm {
         Point b = new Point(bX, bY);
         Point c = new Point(cX, cY);
         Point d = new Point(dX, dY);
-
+        System.out.println("A: " + a.getX() + " " + a.getY());
+        System.out.println("B: " + b.getX() + " " + b.getY());
+        System.out.println("C: " + c.getX() + " " + c.getY());
+        System.out.println("D: " + d.getX() + " " + d.getY());
         // Drawing rectangle contour
+
         drawLineWith1Thickness(buff, grafixImage, a, b, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, b, c, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, c, d, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, d, a, drawingParams, 1);
-        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
-
-//        double diff = Math.abs(a.getX() - b.getX());
-//        double newGradient = (a.getY() - b.getY()) / (a.getX() - b.getX());
-//        while (aX > bX) {
-//            bX += 1;
-//            bY = bY + newGradient;
-//            cX += 1;
-//            cY += newGradient;
-//            Point nextBeginPoint = new Point(bX, bY);
-//            Point nextEndPoint = new Point(cX, cY);
-//            drawLineWith1Thickness(buff, grafixImage, nextBeginPoint, nextEndPoint, drawingParams, 1);
-//        }
-        double highest = Math.max(Math.max(a.getY(), b.getY()), Math.max(c.getY(), d.getY()));
-        double lowest = Math.min(Math.min(a.getY(), b.getY()), Math.min(c.getY(), d.getY()));
-        double rightest = Math.max(Math.max(a.getX(), b.getX()), Math.max(c.getX(), d.getX()));
-        double leftest = Math.min(Math.min(a.getX(), b.getX()), Math.min(c.getX(), d.getX()));
-        for(double x = leftest; x < rightest; ++x){
-            for(double y = lowest; y < highest; ++y){
-                int ax = (int) aX;
-                int ay = (int) aY;
-                int bx = (int) bX;
-                int by = (int) bY;
-                int cx = (int) cX;
-                int cy = (int) cY;
-                int dxx = (int) dX;
-                int dyy = (int) dY;
-
-                double p1 = product(x, y, aX, aY, bX, bY);
-                double p2 = product(x, y, bX, bY, cX, cY);
-                double p3 = product(x, y, cX, cY, dX, dY);
-                double p4 = product(x, y, dX, dY, aX, aY);
-
-                if ((p1 < 0 && p2 < 0 && p3 < 0 && p4 < 0) ||
-                        (p1 > 0 && p2 > 0 && p3 > 0 && p4 > 0)){
-                    fillBuffer(buff, (int) x, (int) y, k, 1, grafixImage.getWidth(), drawingParams, 1);
-                }
-            }
-        }
         // Drawing inside lines
+//        double abDistance = getBetweenDistance(aX, aY, bX, bY);
+//        double step = abDistance / drawingParams.getThickness();
+         c = getPointWithRDistanceFromBeginning(c, d, 1.0);
+        b = getPointWithRDistanceFromBeginning(b, a, 1.0);
+        for (float i = drawingParams.getThickness() - 1; i > 0; --i) {
+            wuNoAliasingDrawing(buff, grafixImage, c, b, drawingParams, 1.0f);
+//            drawLineWith1Thickness(buff, grafixImage, a, d, drawingParams, 1);
+            c = getPointWithRDistanceFromBeginning(c, d, 1.0);
+            b = getPointWithRDistanceFromBeginning(b, a, 1.0);
+        }
+
+//        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+//        double highest = Math.max(Math.max(a.getY(), b.getY()), Math.max(c.getY(), d.getY()));
+//        double lowest = Math.min(Math.min(a.getY(), b.getY()), Math.min(c.getY(), d.getY()));
+//        double rightest = Math.max(Math.max(a.getX(), b.getX()), Math.max(c.getX(), d.getX()));
+//        double leftest = Math.min(Math.min(a.getX(), b.getX()), Math.min(c.getX(), d.getX()));
+//        for(double x = leftest; x < rightest; ++x){
+//            for(double y = lowest; y < highest; ++y){
+//                int ax = (int) aX;
+//                int ay = (int) aY;
+//                int bx = (int) bX;
+//                int by = (int) bY;
+//                int cx = (int) cX;
+//                int cy = (int) cY;
+//                int dxx = (int) dX;
+//                int dyy = (int) dY;
+//
+//                double p1 = product(x, y, aX, aY, bX, bY);
+//                double p2 = product(x, y, bX, bY, cX, cY);
+//                double p3 = product(x, y, cX, cY, dX, dY);
+//                double p4 = product(x, y, dX, dY, aX, aY);
+//
+//                if ((p1 < 0 && p2 < 0 && p3 < 0 && p4 < 0) ||
+//                        (p1 > 0 && p2 > 0 && p3 > 0 && p4 > 0)){
+//                    fillBuffer(buff, (int) x, (int) y, k, 1, grafixImage.getWidth(), drawingParams, 1);
+//                }
+//            }
+//        }
+        return buff;
+    }
+
+    // Drawing inside lines
 //        double abDistance = Math.abs((aX * aX + bY * bY) - (bX * bX + bY * bY));
 //        double step = abDistance / drawingParams.getThickness();
 //        for (float i = drawingParams.getThickness(); i > 1e-6; --i) {
@@ -100,7 +126,124 @@ public class WuAlgorithm implements DrawingAlgorithm {
 //        drawLineWith1Thickness(buff, grafixImage, b, c, drawingParams, 1);
 //        drawLineWith1Thickness(buff, grafixImage, c, d, drawingParams, 1);
 //        drawLineWith1Thickness(buff, grafixImage, d, a, drawingParams, 1);
-        return buff;
+
+    public void defaultLineNoAliasingDrawing(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
+        double x0 = beginPoint.getX();
+        double x1 = endPoint.getX();
+        double y0 = beginPoint.getY();
+        double y1 = endPoint.getY();
+        boolean steep = Math.abs(y0 - y1) > Math.abs(x0 - x1);
+        if (steep) {
+            double temp = x0;
+            x0 = y0;
+            y0 = temp;
+
+            temp = x1;
+            x1 = y1;
+            y1 = temp;
+        }
+
+        if (x0 > x1) {
+            defaultLineNoAliasingDrawing(buff, grafixImage, endPoint, beginPoint, drawingParams);
+            return;
+        }
+
+        double dx = x1 - x0;
+        double dy = y1 - y0;
+        double step = Math.max(Math.abs(dx), Math.abs(dy));
+        dx = dx / step;
+        dy = dy / step;
+        double x = x0 + dx;
+        double y = y0 + dy;
+        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+        for (double i = 1; i <= step; ++i) {
+            int iX = (int)Math.round(x);
+            int iY = (int)Math.round(y);
+            int coordinate;
+            int secondCoordinate;
+            if (steep) {
+                coordinate = getPixelsCoordinates(iY, iX, grafixImage.getWidth(), k);
+                secondCoordinate = getPixelsCoordinates(iY, iX + 1, grafixImage.getWidth(), k);
+
+            } else {
+                coordinate = getPixelsCoordinates(iX, iY, grafixImage.getWidth(), k);
+                secondCoordinate = getPixelsCoordinates(iX + 1, iY, grafixImage.getWidth(), k);
+            }
+            for (int j = 0; j < k; ++j) {
+                buff[coordinate + j] = 0f;
+                buff[secondCoordinate + j] = 0f;
+            }
+            x += dx;
+            y += dy;
+//            if (steep) {
+//                fillBuffer(buff, iY, iX, k, 1, grafixImage.getWidth(), drawingParams, 1);
+//            } else {
+//                fillBuffer(buff, iX, iY, k, 1, grafixImage.getWidth(), drawingParams, 1);
+//            }
+        }
+    }
+
+    public void wuNoAliasingDrawing(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
+        double x0 = beginPoint.getX();
+        double x1 = endPoint.getX();
+        double y0 = beginPoint.getY();
+        double y1 = endPoint.getY();
+
+        boolean steep = Math.abs(y0 - y1) > Math.abs(x0 - x1);
+        if (steep) {
+            double temp = x0;
+            x0 = y0;
+            y0 = temp;
+
+            temp = x1;
+            x1 = y1;
+            y1 = temp;
+        }
+
+        if (x0 > x1) {
+            drawLineWith1Thickness(buff, grafixImage, endPoint, beginPoint, drawingParams, coeff);
+        }
+        double dx = x1 - x0;
+        double dy = y1 - y0;
+        double gradient = (dx == 0) ? 1.0 : dy / dx;
+
+
+        int beginX = (int) Math.round(x0);
+        double beginY = y0 + gradient * (beginX - x0);
+        double gapX = 1 - fractionPart(x0 + 0.5);
+        double gapY = 1 - fractionPart(beginY);
+        double intersectionY = beginY + gradient;
+        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+        if (steep) {
+            fillBuffer(buff, (int) beginY, beginX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            fillBuffer(buff, (int) beginY + 1, beginX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+        } else {
+            fillBuffer(buff, beginX, (int) beginY, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            fillBuffer(buff, beginX, (int) beginY + 1, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+        }
+
+        int endX = (int) Math.round(x1);
+        double endY = y1 + gradient * (endX - x1);
+        gapX = fractionPart(x1 + 0.5);
+        gapY = 1 - fractionPart(endY);
+        if (steep) {
+            fillBuffer(buff, (int) endY, endX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            fillBuffer(buff, (int) (endY) + 1, endX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+        } else {
+            fillBuffer(buff, endX, (int) endY, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            fillBuffer(buff, endX, (int) (endY) + 1, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+        }
+
+        for (int i = beginX + 1; i < endX; ++i) {
+            if (steep) {
+                fillBuffer(buff, (int) (intersectionY), i, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+                fillBuffer(buff, (int) (intersectionY) + 1, i, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            } else {
+                fillBuffer(buff, i, (int) (intersectionY), k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+                fillBuffer(buff, i, (int) (intersectionY) + 1, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
+            }
+            intersectionY += gradient;
+        }
     }
 
     public void drawLineWith1Thickness(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
@@ -189,20 +332,42 @@ public class WuAlgorithm implements DrawingAlgorithm {
     }
 
     private Point getPointWithRDistanceFromBeginning(Point beginPoint, Point endPoint, double r) {
-        double dx = endPoint.getX() - beginPoint.getX();
-        double dy = endPoint.getY() - beginPoint.getY();
+        double x0 = beginPoint.getX();
+        double x1 = endPoint.getX();
+        double y0 = beginPoint.getY();
+        double y1 = endPoint.getY();
+
+//        boolean steep = Math.abs(y0 - y1) > Math.abs(x0 - x1);
+//        if (steep) {
+//            double temp = x0;
+//            x0 = y0;
+//            y0 = temp;
+//
+//            temp = x1;
+//            x1 = y1;
+//            y1 = temp;
+//        }
+//
+//        if (x0 > x1) {
+//            getPointWithRDistanceFromBeginning(endPoint, beginPoint, r);
+//        }
+
+        double dx = x1 - x0;
+        double dy = y1 - y0;
         double gradient = (dx == 0) ? 1.0 : dy / dx;
-        double yIntersect = beginPoint.getY() - gradient * beginPoint.getX();
+        double yIntersect = y0 - gradient * x0;
         double factor = Math.sqrt(r * r / (1 + gradient * gradient));
-        double aX = beginPoint.getX() + factor;
+        double aX = x0 + factor;
         double aY = gradient * aX + yIntersect;
-        double distanceToEnd = Math.pow(endPoint.getX(), 2) + Math.pow(endPoint.getY(), 2);
-        double distanceToBeginning = Math.pow(beginPoint.getX(), 2) + Math.pow(beginPoint.getY(), 2);
-        if (Math.abs(distanceToEnd - distanceToBeginning) < Math.abs(distanceToEnd - (aX * aX + aY * aY))) {
-            aX = beginPoint.getX() - factor;
+        if (getBetweenDistance(x0, y0, x1, y1) < getBetweenDistance(aX, aY, x0, y0)) {
+            aX = x0 - factor;
             aY = gradient * aX + yIntersect;
         }
         return new Point(aX, aY);
+    }
+
+    private double getBetweenDistance(double aX, double aY, double bX, double bY) {
+        return Math.sqrt(Math.pow(aX - bX, 2) + Math.pow(aY - bY, 2));
     }
 
     private void plotBresenham(float[] buffer, DrawingParams params, int k, Point beginPoint, Point endPoint, int width) {
