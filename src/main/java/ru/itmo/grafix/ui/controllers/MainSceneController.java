@@ -343,7 +343,8 @@ public class MainSceneController {
         }
         TabContext tabContext = tabMapping.get(activeTab.getId());
         tabContext.setBeginPoint(null);
-        DrawingParamsChoiceDialog drawingParamsChoiceDialog = getDrawingParamsChoiceDialog(tabContext.getImage().getFormat());
+        GrafixImage image = tabContext.getImage();
+        DrawingParamsChoiceDialog drawingParamsChoiceDialog = getDrawingParamsChoiceDialog(image.getFormat(), image.getColorSpace(), image.getChannel());
         DrawingParams params = drawingParamsChoiceDialog.showAndWait().orElse(null);
         if (params == null) {
             return;
@@ -354,11 +355,11 @@ public class MainSceneController {
         imageView.setOnMouseClicked(e -> getCoordinatesOnDrawMode(e, tabContext));
     }
 
-    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format){
-        if(Objects.equals(format, "P5")){
-            return new P5DrawingParamsChoiceDialog();
+    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format, ColorSpace colorSpace, int channel){
+        if(Objects.equals(format, "P5") || channel != 0){
+            return new SingleChannelDrawingParamsChoiceDialog(format, colorSpace, channel);
         }
-        return new P6DrawingParamsChoiceDialog();
+        return new MultiChannelDrawingParamsChoiceDialog(format, colorSpace, channel);
     }
     private void getCoordinatesOnDrawMode(MouseEvent e, TabContext tabContext) {
         if (tabContext.getBeginPoint() == null) {

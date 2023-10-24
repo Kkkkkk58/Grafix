@@ -3,8 +3,13 @@ package ru.itmo.grafix.ui.components.dialogs;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
+import ru.itmo.grafix.core.colorspace.ColorSpace;
 
-public class P5DrawingParamsChoiceDialog extends DrawingParamsChoiceDialog {
+public class SingleChannelDrawingParamsChoiceDialog extends DrawingParamsChoiceDialog {
+    public SingleChannelDrawingParamsChoiceDialog(String format, ColorSpace colorSpace, int channel) {
+        super(format, colorSpace, channel);
+    }
+
     @Override
     protected TextField[] getColorTextFields() {
         TextField color = new TextField("0");
