@@ -345,6 +345,9 @@ public class MainSceneController {
         tabContext.setBeginPoint(null);
         DrawingParamsChoiceDialog drawingParamsChoiceDialog = getDrawingParamsChoiceDialog(tabContext.getImage().getFormat());
         DrawingParams params = drawingParamsChoiceDialog.showAndWait().orElse(null);
+        if (params == null) {
+            return;
+        }
         ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
         tabContext.setDrawingContext(params);
         ImageView imageView = getImageViewFromScrollPane(scrollPane);
