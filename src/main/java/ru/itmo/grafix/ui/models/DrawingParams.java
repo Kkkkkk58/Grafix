@@ -23,5 +23,8 @@ public class DrawingParams {
         return opacity;
     }
 
+    public void setColor(byte[] color) {
+        this.color = color;
+    }
 
 }

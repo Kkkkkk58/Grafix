@@ -25,4 +25,6 @@ module ru.itmo.grafix {
     opens ru.itmo.grafix.core.imageprocessing to javafx.fxml;
     exports ru.itmo.grafix.core.image;
     opens ru.itmo.grafix.core.image to javafx.fxml;
+    exports ru.itmo.grafix.core.dithering;
+    opens ru.itmo.grafix.core.dithering to javafx.fxml;
 }
