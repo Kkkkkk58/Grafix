@@ -17,29 +17,6 @@ public class WuAlgorithm implements DrawingAlgorithm {
             return buff;
         }
 
-//        if (drawingParams.getThickness() < 1) {
-//            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams, drawingParams.getThickness());
-//            return buff;
-//        }
-
-        // DOESNOT WORK
-//        if (endPoint.getY() - beginPoint.getY() / (endPoint.getX() - beginPoint.getX()) < 1) {
-//            double wy = (drawingParams.getThickness() - 1) * Math.sqrt(Math.pow(endPoint.getX() - beginPoint.getX(), 2) + Math.pow(endPoint.getY() - beginPoint.getY(), 2)) / (2 * Math.abs(endPoint.getX() - beginPoint.getX()));
-//            for (double i = 0; i < wy; i++) {
-//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX(), beginPoint.getY() - i), new Point(endPoint.getX(), endPoint.getY() - i), drawingParams, 1);
-//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX(), beginPoint.getY() + i), new Point(endPoint.getX(), endPoint.getY() + i), drawingParams, 1);
-//            }
-//        } else {
-//            double wx = (drawingParams.getThickness() - 1) * Math.sqrt(Math.pow(endPoint.getX() - beginPoint.getX(), 2) + Math.pow(endPoint.getY() - beginPoint.getY(), 2)) / (2 * Math.abs(endPoint.getY() - beginPoint.getY()));
-//            for (double i = 0; i < wx; i++) {
-//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX() - i, beginPoint.getY()), new Point(endPoint.getX() - i, endPoint.getY()), drawingParams, 1);
-//                drawLineWith1Thickness(buff, grafixImage, new Point(beginPoint.getX() + i, beginPoint.getY()), new Point(endPoint.getX() + i, endPoint.getY()), drawingParams, 1);
-//            }
-//        }
-//
-//        return buff;
-
-
         double dx = endPoint.getX() - beginPoint.getX();
         double dy = endPoint.getY() - beginPoint.getY();
         double gradient = (dx == 0) ? 1.0 : dy / dx;
@@ -97,11 +74,11 @@ public class WuAlgorithm implements DrawingAlgorithm {
 //        double step = abDistance / drawingParams.getThickness();
 //        c = getPointWithRDistanceFromBeginning(c, d, 1.0);
 //        b = getPointWithRDistanceFromBeginning(b, a, 1.0);
-        for (float i = drawingParams.getThickness() * 4 - 1; i > 0; --i) {
+        for (float i = drawingParams.getThickness() * 2 - 1; i > 0; --i) {
 //            defaultLineNoAliasingDrawing(buff, buffer, grafixImage, c, b, drawingParams);
 //            drawLineWith1Thickness(buff, grafixImage, a, d, drawingParams, 1);
-            c = getPointWithRDistanceFromBeginning(c, d, 0.25);
-            b = getPointWithRDistanceFromBeginning(b, a, 0.25);
+            c = getPointWithRDistanceFromBeginning(c, d, 0.5);
+            b = getPointWithRDistanceFromBeginning(b, a, 0.5);
             defaultLineNoAliasingDrawing(buff, buffer, grafixImage, c, b, drawingParams);
 
         }
