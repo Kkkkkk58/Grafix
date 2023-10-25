@@ -56,7 +56,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         return buff;
     }
 
-    public void defaultLineNoAliasingDrawing(float[] buff, float[] buffer, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
+    private void defaultLineNoAliasingDrawing(float[] buff, float[] buffer, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
         double x0 = beginPoint.getX();
         double x1 = endPoint.getX();
         double y0 = beginPoint.getY();
@@ -93,13 +93,12 @@ public class WuAlgorithm implements DrawingAlgorithm {
             if (steep) {
                 coordinate = getPixelsCoordinates(iY, iX, grafixImage.getWidth(), k);
                 secondCoordinate = getPixelsCoordinates(iY, iX + 1, grafixImage.getWidth(), k);
-
             } else {
                 coordinate = getPixelsCoordinates(iX, iY, grafixImage.getWidth(), k);
                 secondCoordinate = getPixelsCoordinates(iX + 1, iY, grafixImage.getWidth(), k);
             }
             for (int j = 0; j < k; ++j) {
-                float c = (drawingParams.getColor()[j] & 0xff) / 255f;
+                float c = drawingParams.getColor()[j];
                 buff[coordinate + j] = blendColors(buffer[coordinate + j], c, drawingParams.getOpacity());
                 buff[secondCoordinate + j] = blendColors(buffer[secondCoordinate + j], c, drawingParams.getOpacity());
             }
@@ -113,7 +112,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         }
     }
 
-    public void wuNoAliasingDrawing(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
+    private void wuNoAliasingDrawing(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
         double x0 = beginPoint.getX();
         double x1 = endPoint.getX();
         double y0 = beginPoint.getY();
@@ -176,7 +175,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         }
     }
 
-    public void drawLineWith1Thickness(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
+    private void drawLineWith1Thickness(float[] buff, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams, float coeff) {
         double x0 = beginPoint.getX();
         double x1 = endPoint.getX();
         double y0 = beginPoint.getY();
