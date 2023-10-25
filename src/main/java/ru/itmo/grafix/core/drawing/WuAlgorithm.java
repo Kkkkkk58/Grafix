@@ -252,7 +252,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         int coordinate = getPixelsCoordinates(x, y, width, k);
         for (int i = 0; i < k; ++i) {
             float bgColor = buffer[coordinate + i];
-            float lineColor = blendColors(bgColor, (params.getColor()[i] & 0xff) / 255f, intensity);
+            float lineColor = blendColors(bgColor, params.getColor()[i], intensity);
             buffer[coordinate + i] = blendColors(bgColor, lineColor, params.getOpacity());
         }
     }
