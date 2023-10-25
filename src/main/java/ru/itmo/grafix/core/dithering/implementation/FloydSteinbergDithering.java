@@ -23,20 +23,12 @@ public class FloydSteinbergDithering extends Dithering {
             for (int j = 0; j < width; ++j) {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
-//                    if (Float.isNaN(buffer[index])) {
-//                        System.out.printf("NaN buffer[%d]\n",index);
-//                    }
-                    float oldPixel = data[index] + buffer[index];
-                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f, true);
-//                    if (Float.isNaN(newPixel)) {
-//                        System.out.printf("NaN NEWPIXEL %d\n", index);
-//                        System.exit(0);
-//                    }
+                    float oldPixel = data[index] + GammaCorrecter.getConvertedValue(gamma, buffer[index]);
+                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, GammaCorrecter.getConvertedValue(gamma, 0.5f), true);
                     buffer[index] = newPixel;
-//                    newPixel = GammaCorrecter.getReversedGamma(newPixel ,gamma);
                     for (int factorInd = 0; factorInd < factors.length; ++factorInd) {
                         int[] diDj = errorRowColumnAdjustments[factorInd];
-                        float errFactor = (oldPixel - newPixel) * factors[factorInd];
+                        float errFactor = (GammaCorrecter.getReversedGamma(oldPixel, gamma) - GammaCorrecter.getReversedGamma(newPixel, gamma)) * factors[factorInd];
                         int di = diDj[0];
                         int dj = diDj[1];
                         int iNew = i + di;

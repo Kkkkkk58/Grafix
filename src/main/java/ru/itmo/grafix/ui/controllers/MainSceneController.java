@@ -399,9 +399,9 @@ public class MainSceneController {
 
     private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth){
         float[] data =  image.getColorSpace().toRGB(image.getData());
-        data = GammaCorrecter.restoreGamma(image.getGamma(), data);
+//        data = GammaCorrecter.restoreGamma(image.getGamma(), data);
         data = dithering.convert(data, image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
-//        data = GammaCorrecter.restoreGamma(image.getGamma(),  data);
+//        data = GammaCorrecter.restoreGamma(0,  data);
         return image.getColorSpace().fromRGB(data);
     }
 

@@ -14,6 +14,7 @@ public class GradientGenerator {
             System.arraycopy(buffer, 0, buffer, usedSize, width);
             usedSize += width;
         }
-        return buffer;
+//        return buffer;
+        return FbConverter.convertFloatToByte(GammaCorrecter.convertGamma(0, 1, FbConverter.convertBytesToFloat(buffer, 255)));
     }
 }
