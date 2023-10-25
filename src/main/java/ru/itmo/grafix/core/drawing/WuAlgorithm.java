@@ -38,66 +38,23 @@ public class WuAlgorithm implements DrawingAlgorithm {
         Point b = new Point(bX, bY);
         Point c = new Point(cX, cY);
         Point d = new Point(dX, dY);
-//        System.out.println("A: " + a.getX() + " " + a.getY());
-//        System.out.println("B: " + b.getX() + " " + b.getY());
-//        System.out.println("C: " + c.getX() + " " + c.getY());
-//        System.out.println("D: " + d.getX() + " " + d.getY());
 
         float[] buffer = Arrays.copyOf(buff, buff.length);
 
-
-//        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
-//        double highest = Math.max(Math.max(a.getY(), b.getY()), Math.max(c.getY(), d.getY()));
-//        double lowest = Math.min(Math.min(a.getY(), b.getY()), Math.min(c.getY(), d.getY()));
-//        double rightest = Math.max(Math.max(a.getX(), b.getX()), Math.max(c.getX(), d.getX()));
-//        double leftest = Math.min(Math.min(a.getX(), b.getX()), Math.min(c.getX(), d.getX()));
-//        for(double x = leftest; x < rightest; ++x){
-//            for(double y = lowest; y < highest; ++y){
-//
-//                double p1 = product(x, y, aX, aY, bX, bY);
-//                double p2 = product(x, y, bX, bY, cX, cY);
-//                double p3 = product(x, y, cX, cY, dX, dY);
-//                double p4 = product(x, y, dX, dY, aX, aY);
-//
-//                if ((p1 < 0 && p2 < 0 && p3 < 0 && p4 < 0) ||
-//                        (p1 > 0 && p2 > 0 && p3 > 0 && p4 > 0)){
-//                    fillBuffer(buff, (int) x, (int) y, k, 1, grafixImage.getWidth(), drawingParams, 1);
-//                }
-//            }
-//        }
 
         drawLineWith1Thickness(buff, grafixImage, a, b, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, b, c, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, c, d, drawingParams, 1);
         drawLineWith1Thickness(buff, grafixImage, d, a, drawingParams, 1);
-//        double abDistance = getBetweenDistance(aX, aY, bX, bY);
-//        double step = abDistance / drawingParams.getThickness();
-//        c = getPointWithRDistanceFromBeginning(c, d, 1.0);
-//        b = getPointWithRDistanceFromBeginning(b, a, 1.0);
+
         for (float i = drawingParams.getThickness() * 2 - 1; i > 0; --i) {
-//            defaultLineNoAliasingDrawing(buff, buffer, grafixImage, c, b, drawingParams);
-//            drawLineWith1Thickness(buff, grafixImage, a, d, drawingParams, 1);
             c = getPointWithRDistanceFromBeginning(c, d, 0.5);
             b = getPointWithRDistanceFromBeginning(b, a, 0.5);
             defaultLineNoAliasingDrawing(buff, buffer, grafixImage, c, b, drawingParams);
-
         }
 
         return buff;
     }
-
-//        double abDistance = Math.abs((aX * aX + bY * bY) - (bX * bX + bY * bY));
-//        double step = abDistance / drawingParams.getThickness();
-//        for (float i = drawingParams.getThickness(); i > 1e-6; --i) {
-//            drawLineWith1Thickness(buff, grafixImage, a, d, drawingParams, 1);
-//            d = getPointWithRDistanceFromBeginning(d, c, step);
-//            a = getPointWithRDistanceFromBeginning(a, b, step);
-//
-//        }
-//        drawLineWith1Thickness(buff, grafixImage, a, b, drawingParams, 1);
-//        drawLineWith1Thickness(buff, grafixImage, b, c, drawingParams, 1);
-//        drawLineWith1Thickness(buff, grafixImage, c, d, drawingParams, 1);
-//        drawLineWith1Thickness(buff, grafixImage, d, a, drawingParams, 1);
 
     public void defaultLineNoAliasingDrawing(float[] buff, float[] buffer, GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
         double x0 = beginPoint.getX();
@@ -174,7 +131,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         }
 
         if (x0 > x1) {
-            drawLineWith1Thickness(buff, grafixImage, endPoint, beginPoint, drawingParams, coeff);
+            wuNoAliasingDrawing(buff, grafixImage, endPoint, beginPoint, drawingParams, coeff);
         }
         double dx = x1 - x0;
         double dy = y1 - y0;
@@ -310,21 +267,6 @@ public class WuAlgorithm implements DrawingAlgorithm {
         double y0 = beginPoint.getY();
         double y1 = endPoint.getY();
 
-//        boolean steep = Math.abs(y0 - y1) > Math.abs(x0 - x1);
-//        if (steep) {
-//            double temp = x0;
-//            x0 = y0;
-//            y0 = temp;
-//
-//            temp = x1;
-//            x1 = y1;
-//            y1 = temp;
-//        }
-//
-//        if (x0 > x1) {
-//            getPointWithRDistanceFromBeginning(endPoint, beginPoint, r);
-//        }
-
         double dx = x1 - x0;
         double dy = y1 - y0;
         double gradient = (dx == 0) ? 1.0 : dy / dx;
@@ -341,34 +283,5 @@ public class WuAlgorithm implements DrawingAlgorithm {
 
     private double getBetweenDistance(double aX, double aY, double bX, double bY) {
         return Math.sqrt(Math.pow(aX - bX, 2) + Math.pow(aY - bY, 2));
-    }
-
-    private void plotBresenham(float[] buffer, DrawingParams params, int k, Point beginPoint, Point endPoint, int width) {
-        double x0 = beginPoint.getX();
-        double x1 = endPoint.getX();
-        double y0 = beginPoint.getY();
-        double y1 = endPoint.getY();
-
-        double dx = Math.abs(x1 - x0);
-        double sx = x0 < x1 ? 1 : -1;
-        double dy = -Math.abs(y1 - y0);
-        double sy = y0 < y1 ? 1 : -1;
-        double error = dx + dy;
-        while (x0 < x1 && y0 < y1) {
-            fillBuffer(buffer, (int) x0, (int) y0, k, 1, width, params, 1);
-            double error2 = 2 * error;
-            if (error2 >= dy) {
-                error += dy;
-                x0 += sx;
-            }
-            if (error2 <= dx) {
-                error += dx;
-                y0 += sy;
-            }
-        }
-    }
-
-    private double product(double Px, double Py, double Ax, double Ay, double Bx, double By) {
-        return (Bx - Ax) * (Py - Ay) - (By - Ay) * (Px - Ax);
     }
 }
