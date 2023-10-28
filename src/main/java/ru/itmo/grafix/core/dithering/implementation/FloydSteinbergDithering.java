@@ -2,9 +2,7 @@ package ru.itmo.grafix.core.dithering.implementation;
 
 import ru.itmo.grafix.core.dithering.Dithering;
 import ru.itmo.grafix.core.dithering.DitheringType;
-import ru.itmo.grafix.core.imageprocessing.GammaCorrecter;
 
-import java.util.Arrays;
 import java.util.function.BiFunction;
 
 public class FloydSteinbergDithering extends Dithering {
@@ -23,17 +21,9 @@ public class FloydSteinbergDithering extends Dithering {
             for (int j = 0; j < width; ++j) {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
-//                    if (Float.isNaN(buffer[index])) {
-//                        System.out.printf("NaN buffer[%d]\n",index);
-//                    }
                     float oldPixel = data[index] + buffer[index];
-                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f, true);
-//                    if (Float.isNaN(newPixel)) {
-//                        System.out.printf("NaN NEWPIXEL %d\n", index);
-//                        System.exit(0);
-//                    }
+                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f);
                     buffer[index] = newPixel;
-//                    newPixel = GammaCorrecter.getReversedGamma(newPixel ,gamma);
                     for (int factorInd = 0; factorInd < factors.length; ++factorInd) {
                         int[] diDj = errorRowColumnAdjustments[factorInd];
                         float errFactor = (oldPixel - newPixel) * factors[factorInd];
