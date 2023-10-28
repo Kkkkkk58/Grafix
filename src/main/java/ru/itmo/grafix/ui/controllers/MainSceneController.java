@@ -401,7 +401,6 @@ public class MainSceneController {
         float[] data =  image.getColorSpace().toRGB(image.getData());
         data = GammaCorrecter.restoreGamma(image.getGamma(), data);
         data = dithering.convert(data, image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
-//        data = GammaCorrecter.restoreGamma(image.getGamma(),  data);
         return image.getColorSpace().fromRGB(data);
     }
 

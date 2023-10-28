@@ -22,7 +22,7 @@ public class AtkinsonDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
                     float oldPixel = buffer[index] + data[index];
-                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f, true);
+                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f);
                     buffer[index] = newPixel;
                     float errFactor = (oldPixel - newPixel) * factor;
                     for (int[] diDj : errorRowColumnAdjustments) {

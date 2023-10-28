@@ -22,7 +22,7 @@ public class FloydSteinbergDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
                     float oldPixel = data[index] + buffer[index];
-                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f, true);
+                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f);
                     buffer[index] = newPixel;
                     for (int factorInd = 0; factorInd < factors.length; ++factorInd) {
                         int[] diDj = errorRowColumnAdjustments[factorInd];

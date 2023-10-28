@@ -9,27 +9,13 @@ public abstract class Dithering {
         this.type = type;
     }
 
-    protected float getNearestPaletteColor(float value, int bitDepth, float gamma, float threshold, boolean flag) {
-//        return Math.round(value * bitDepth) / (float) bitDepth;
-//        if(value <= 0.0f){
-//            return 0;
-//        }
-//        if(value >= 1.0f){ //hgdfihge
-//            return value;
-//        }
+    protected float getNearestPaletteColor(float value, int bitDepth, float gamma, float threshold) {
         value *= 255;
         float lower = getLower(value, bitDepth, gamma);
         float upper = getUpper(value, bitDepth, gamma);
         float l = GammaCorrecter.getConvertedValue(gamma, lower / 255f);
         float u = GammaCorrecter.getConvertedValue(gamma, upper / 255f);
         float convertedValue = GammaCorrecter.getConvertedValue(gamma, value / 255f);
-//        if(flag) {
-//            threshold = GammaCorrecter.getConvertedValue(gamma, threshold);
-//            return (convertedValue - l > threshold * (u - l)) ? Math.min(u, 1.0f) : Math.max(l, 0.0f);
-//        }
-//        else{
-//            return (convertedValue - l > threshold * (u - l)) ? Math.min(upper / 255f, 1.0f) : Math.max(lower / 255f, 0.0f);
-//        }
         return (convertedValue - l > threshold * (u - l)) ? Math.min(upper / 255f, 1.0f) : Math.max(lower / 255f, 0.0f);
     }
 
