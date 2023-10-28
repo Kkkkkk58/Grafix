@@ -12,8 +12,8 @@ public class WuAlgorithm implements DrawingAlgorithm {
     public float[] drawLine(GrafixImage grafixImage, Point beginPoint, Point endPoint, DrawingParams drawingParams) {
         float[] buff = grafixImage.getColorSpace().toRGB(grafixImage.getData());
         buff = GammaCorrecter.convertGamma(1, grafixImage.getGamma(), buff);
-        if (Math.abs(drawingParams.getThickness() - 1.0) < 1e-6) {
-            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams, 1);
+        if (drawingParams.getThickness() <= 1.0) {
+            drawLineWith1Thickness(buff, grafixImage, beginPoint, endPoint, drawingParams, drawingParams.getThickness());
             return buff;
         }
 
