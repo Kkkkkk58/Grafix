@@ -10,6 +10,9 @@ public class ChannelDecomposer {
         int ch1 = 1;
         int ch2 = 2;
         switch (channelNumber) {
+            case 0 -> {
+                return data;
+            }
             case 2 -> ch1 = 0;
             case 3 -> {
                 ch1 = 0;
@@ -34,11 +37,12 @@ public class ChannelDecomposer {
     }
 
     public static GrafixImage getDecomposedImage(GrafixImage image) {
-        if (Objects.equals(image.getChannel(), "all")) {
+        int ch = image.getChannel();
+        if (ch == 0) {
             return image;
         }
         float[] newData = new float[image.getData().length / 3];
-        int channel = Integer.parseInt(image.getChannel()) - 1;
+        int channel = ch - 1;
         for (int i = 0; i < newData.length; ++i) {
             newData[i] = image.getData()[i * 3 + channel];
         }

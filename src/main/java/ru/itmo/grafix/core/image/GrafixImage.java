@@ -33,7 +33,7 @@ public class GrafixImage {
         this.headerSize = headerSize;
         this.colorSpace = colorSpace;
         this.channel = 0;
-        this.gamma = 0f;
+        this.gamma = 1f;
     }
 
     public String getFormat() {
@@ -68,11 +68,8 @@ public class GrafixImage {
         return colorSpace;
     }
 
-    public String getChannel() {
-        if (channel == 0) {
-            return "all";
-        }
-        return String.valueOf(channel);
+    public int getChannel() {
+        return channel;
     }
 
     public float getGamma() {
