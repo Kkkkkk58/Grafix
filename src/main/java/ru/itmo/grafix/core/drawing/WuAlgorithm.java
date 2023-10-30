@@ -84,7 +84,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         dy = dy / step;
         double x = x0 + dx;
         double y = y0 + dy;
-        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+        int k = grafixImage.getTotalChannels();
         for (double i = 1; i <= step; ++i) {
             int iX = (int) Math.round(x);
             int iY = (int) Math.round(y);
@@ -104,11 +104,6 @@ public class WuAlgorithm implements DrawingAlgorithm {
             }
             x += dx;
             y += dy;
-//            if (steep) {
-//                fillBuffer(buff, iY, iX, k, 1, grafixImage.getWidth(), drawingParams, 1);
-//            } else {
-//                fillBuffer(buff, iX, iY, k, 1, grafixImage.getWidth(), drawingParams, 1);
-//            }
         }
     }
 
@@ -142,7 +137,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         double gapX = 1 - fractionPart(x0 + 0.5);
         double gapY = 1 - fractionPart(beginY);
         double intersectionY = beginY + gradient;
-        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+        int k = grafixImage.getTotalChannels();
         if (steep) {
             fillBuffer(buff, (int) beginY, beginX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
             fillBuffer(buff, (int) beginY + 1, beginX, k, 1.0, grafixImage.getWidth(), drawingParams, coeff);
@@ -205,7 +200,7 @@ public class WuAlgorithm implements DrawingAlgorithm {
         double gapX = 1 - fractionPart(x0 + 0.5);
         double gapY = 1 - fractionPart(beginY);
         double intersectionY = beginY + gradient;
-        int k = buff.length / (grafixImage.getWidth() * grafixImage.getHeight());
+        int k = grafixImage.getTotalChannels();
         if (steep) {
             fillBuffer(buff, (int) beginY, beginX, k, gapY * gapX, grafixImage.getWidth(), drawingParams, coeff);
             fillBuffer(buff, (int) beginY + 1, beginX, k, (1 - gapY) * gapX, grafixImage.getWidth(), drawingParams, coeff);

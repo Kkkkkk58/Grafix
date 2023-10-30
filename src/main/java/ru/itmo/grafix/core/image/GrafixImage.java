@@ -84,6 +84,10 @@ public class GrafixImage {
         this.gamma = gamma;
     }
 
+    public int getTotalChannels() {
+        return data.length / (height * width);
+    }
+
     public void convertTo(ColorSpace colorSpace) {
         if (colorSpace == this.getColorSpace()) {
             return;
