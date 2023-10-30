@@ -11,8 +11,8 @@
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
             <Menu mnemonicParsing="false" text="New">
-                <MenuItem mnemonicParsing="false" onAction="#generateGradient" text="Gradient"/>
-                <MenuItem mnemonicParsing="false" onAction="#openEmptyTab" text="Empty"/>
+                <MenuItem mnemonicParsing="false" onAction="#generateGradient" text="Gradient" />
+                <MenuItem mnemonicParsing="false" onAction="#openEmptyTab" text="Empty" />
             </Menu>
             <MenuItem mnemonicParsing="false" onAction="#openFile" text="Open…">
                 <accelerator>
@@ -48,17 +48,21 @@
                 <MenuItem mnemonicParsing="false" onAction="#assignGamma" text="Assign" />
                 <MenuItem mnemonicParsing="false" onAction="#convertGamma" text="Convert" />
             </Menu>
-            <MenuItem mnemonicParsing="false" onAction="#chooseDithering" text="Dithering"/>
-            <MenuItem mnemonicParsing="false" text="Undo"/>
-            <MenuItem mnemonicParsing="false" text="Redo"/>
-            <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Cut"/>
-            <MenuItem mnemonicParsing="false" text="Copy"/>
-            <MenuItem mnemonicParsing="false" text="Paste"/>
-            <MenuItem mnemonicParsing="false" text="Delete"/>
-            <SeparatorMenuItem mnemonicParsing="false"/>
-            <MenuItem mnemonicParsing="false" text="Select All"/>
-            <MenuItem mnemonicParsing="false" text="Unselect All"/>
+            <MenuItem mnemonicParsing="false" onAction="#chooseDithering" text="Dithering" />
+            <Menu mnemonicParsing="false" text="Autocorrect...">
+                <MenuItem mnemonicParsing="false" onAction="#showHistogram" text="Show histogram"/>
+                <MenuItem mnemonicParsing="false" onAction="#autocorrect" text="Apply autocorrection"/>
+            </Menu>
+            <MenuItem mnemonicParsing="false" text="Undo" />
+            <MenuItem mnemonicParsing="false" text="Redo" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Cut" />
+            <MenuItem mnemonicParsing="false" text="Copy" />
+            <MenuItem mnemonicParsing="false" text="Paste" />
+            <MenuItem mnemonicParsing="false" text="Delete" />
+            <SeparatorMenuItem mnemonicParsing="false" />
+            <MenuItem mnemonicParsing="false" text="Select All" />
+            <MenuItem mnemonicParsing="false" text="Unselect All" />
         </Menu>
         <Menu mnemonicParsing="false" text="Help" />
         <Menu mnemonicParsing="false">

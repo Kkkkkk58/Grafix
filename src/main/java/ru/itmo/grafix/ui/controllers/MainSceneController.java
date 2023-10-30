@@ -19,17 +19,18 @@ import javafx.util.Pair;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
 import ru.itmo.grafix.core.dithering.Dithering;
-import ru.itmo.grafix.core.dithering.DitheringType;
 import ru.itmo.grafix.core.dithering.implementation.AtkinsonDithering;
 import ru.itmo.grafix.core.dithering.implementation.FloydSteinbergDithering;
 import ru.itmo.grafix.core.dithering.implementation.OrderedDithering;
 import ru.itmo.grafix.core.dithering.implementation.RandomDithering;
 import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
 import ru.itmo.grafix.core.drawing.WuAlgorithm;
+import ru.itmo.grafix.core.exception.InvalidAutocorrectionException;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.ui.components.dialogs.*;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
+import ru.itmo.grafix.ui.components.windows.HistogramWindow;
 import ru.itmo.grafix.ui.models.DrawingParams;
 import ru.itmo.grafix.ui.models.Point;
 import ru.itmo.grafix.ui.models.TabContext;
@@ -460,5 +461,40 @@ public class MainSceneController {
 
         ScrollPane scrollPane = (ScrollPane) getActiveTab().getContent();
         getImageViewFromScrollPane(scrollPane).setOnMouseClicked(null);
+    }
+
+    public void showHistogram() {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+
+        // TODO get data for histogram
+
+        HistogramWindow histogramWindow = new HistogramWindow();
+        // TODO set data and display
+    }
+
+    public void autocorrect() {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+
+        Double autocorrectionParameter = AutocorrectionInputDialog.getAutocorrectionInput();
+        if (autocorrectionParameter == null) {
+            return;
+        }
+        if (isAutocorrectionParameterOutOfBounds(autocorrectionParameter)) {
+            throw new InvalidAutocorrectionException(String.valueOf(autocorrectionParameter));
+        }
+
+        // TODO call applyAutocorrection(...) or smth
+
+        displayImage(image.getFormat(), image.getData(), image.getWidth(), image.getHeight());
+    }
+
+    private static boolean isAutocorrectionParameterOutOfBounds(Double autocorrectionParameter) {
+        return autocorrectionParameter < 0 || autocorrectionParameter >= 0.5;
     }
 }
