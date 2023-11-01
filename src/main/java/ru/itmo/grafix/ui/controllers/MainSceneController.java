@@ -16,6 +16,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
+import ru.itmo.grafix.core.autocorrection.ImageHistogramData;
+import ru.itmo.grafix.core.autocorrection.ImageHistogramExtractor;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.*;
 import ru.itmo.grafix.core.dithering.Dithering;
@@ -469,10 +471,11 @@ public class MainSceneController {
             return;
         }
 
-        // TODO get data for histogram
+        List<ImageHistogramData> histogramData = ImageHistogramExtractor.getImageHistogramData(image);
 
-        HistogramWindow histogramWindow = new HistogramWindow();
-        // TODO set data and display
+        HistogramWindow histogramWindow = new HistogramWindow(histogramData);
+
+        histogramWindow.showAndWait();
     }
 
     public void autocorrect() {
