@@ -30,10 +30,11 @@ public abstract class Dithering {
         return type.getName();
     }
 
-    private int getLower(float value, int bitDepth, float gamma){
-       return (int) (Math.floor(value / (255f / (Math.pow(2, bitDepth) - 1))) * (255f / (Math.pow(2, bitDepth) - 1)));
+    private int getLower(float value, int bitDepth, float gamma) {
+        return (int) (Math.floor(value / (255f / (Math.pow(2, bitDepth) - 1))) * (255f / (Math.pow(2, bitDepth) - 1)));
     }
-    private int getUpper(float value, int bitDepth, float gamma){
+
+    private int getUpper(float value, int bitDepth, float gamma) {
         return (int) (Math.ceil(value / (255f / (Math.pow(2, bitDepth) - 1))) * (255f / (Math.pow(2, bitDepth) - 1)));
     }
 }

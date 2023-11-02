@@ -6,8 +6,9 @@ import ru.itmo.grafix.core.dithering.DitheringType;
 import java.util.function.BiFunction;
 
 public class FloydSteinbergDithering extends Dithering {
-    int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {1, -1}, {1, 0}, {1, 1}};
-    float[] factors = new float[] {7/16f, 3/16f, 5/16f, 1/16f};
+    int[][] errorRowColumnAdjustments = new int[][]{{0, 1}, {1, -1}, {1, 0}, {1, 1}};
+    float[] factors = new float[]{7 / 16f, 3 / 16f, 5 / 16f, 1 / 16f};
+
     public FloydSteinbergDithering() {
         super(DitheringType.FLOYD_STEINBERG);
     }
@@ -22,7 +23,7 @@ public class FloydSteinbergDithering extends Dithering {
                 for (int k = 0; k < bytesPerPixel; ++k) {
                     int index = getRowColumnIndex.apply(i, j) + k;
                     float oldPixel = data[index] + buffer[index];
-                    float newPixel = getNearestPaletteColor( oldPixel, bitDepth, gamma, 0.5f);
+                    float newPixel = getNearestPaletteColor(oldPixel, bitDepth, gamma, 0.5f);
                     buffer[index] = newPixel;
                     for (int factorInd = 0; factorInd < factors.length; ++factorInd) {
                         int[] diDj = errorRowColumnAdjustments[factorInd];

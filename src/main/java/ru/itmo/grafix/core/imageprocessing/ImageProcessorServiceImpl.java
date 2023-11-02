@@ -1,12 +1,15 @@
 package ru.itmo.grafix.core.imageprocessing;
 
-import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.exception.ByteReaderException;
 import ru.itmo.grafix.core.exception.ByteWriterException;
 import ru.itmo.grafix.core.exception.UnsupportedImageFormatException;
+import ru.itmo.grafix.core.image.GrafixImage;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,8 +40,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             byte[] buf = new byte[bufSize];
             br.read(buf);
             return new GrafixImage(new String(format), width, height, 255, FbConverter.convertBytesToFloat(buf, maxVal), absolutePath, headerSize, colorSpace);
-        }
-        catch (IOException inputException) {
+        } catch (IOException inputException) {
             throw new ByteReaderException();
         }
     }

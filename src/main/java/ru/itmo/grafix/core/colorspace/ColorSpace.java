@@ -1,5 +1,8 @@
 package ru.itmo.grafix.core.colorspace;
 
+import ru.itmo.grafix.core.image.GrafixImage;
+import ru.itmo.grafix.core.imageprocessing.PixelValueNormalizer;
+
 import java.util.Objects;
 
 public abstract class ColorSpace {
@@ -11,10 +14,19 @@ public abstract class ColorSpace {
     }
 
     public abstract float[] toRGB(float[] buffer);
+
     public abstract float[] fromRGB(float[] buffer);
+
+    public abstract int[] getAutocorrectionChannels();
+
     public abstract float getCoefficient();
-    public int getIndex(){
+
+    public int getIndex() {
         return type.ordinal();
+    }
+
+    public float normalize(float value) {
+        return PixelValueNormalizer.normalize(value);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ru.itmo.grafix.core.colorspace.implementation;
 
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.ColorSpaceType;
+import ru.itmo.grafix.core.image.GrafixImage;
 
 public class CMY extends ColorSpace {
     public CMY() {
@@ -22,6 +23,16 @@ public class CMY extends ColorSpace {
     @Override
     public float[] fromRGB(float[] buffer) {
         return toRGB(buffer);
+    }
+
+    @Override
+    public int[] getAutocorrectionChannels() {
+        return new int[]{0, 1, 2};
+    }
+
+    @Override
+    public float[] applyAutocorrection(GrafixImage image, double ignoreCoefficient) {
+        return new float[0];
     }
 
     @Override

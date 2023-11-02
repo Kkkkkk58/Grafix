@@ -6,7 +6,8 @@ import ru.itmo.grafix.core.dithering.DitheringType;
 import java.util.function.BiFunction;
 
 public class AtkinsonDithering extends Dithering {
-    private final int[][] errorRowColumnAdjustments = new int[][] {{0, 1}, {0, 2}, {1, -1}, {1, 0}, {1, 1}, {2, 0}};
+    private final int[][] errorRowColumnAdjustments = new int[][]{{0, 1}, {0, 2}, {1, -1}, {1, 0}, {1, 1}, {2, 0}};
+
     public AtkinsonDithering() {
         super(DitheringType.ATKINSON);
     }

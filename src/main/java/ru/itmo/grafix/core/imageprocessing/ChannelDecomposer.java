@@ -1,7 +1,7 @@
 package ru.itmo.grafix.core.imageprocessing;
 
-import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
+import ru.itmo.grafix.core.image.GrafixImage;
 
 import java.util.Objects;
 

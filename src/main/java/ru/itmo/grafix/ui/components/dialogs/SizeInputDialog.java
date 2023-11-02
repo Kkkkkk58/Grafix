@@ -1,6 +1,9 @@
 package ru.itmo.grafix.ui.components.dialogs;
 
-import javafx.scene.control.*;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
 import ru.itmo.grafix.core.exception.InvalidSizeException;
@@ -27,7 +30,7 @@ public class SizeInputDialog extends Dialog<Pair<Integer, Integer>> {
                         return (ButtonType.OK.equals(button))
                                 ? new Pair<>(Integer.parseInt(width.getText()), Integer.parseInt(height.getText()))
                                 : null;
-                    } catch (NumberFormatException exception){
+                    } catch (NumberFormatException exception) {
                         throw new InvalidSizeException();
                     }
                 }
