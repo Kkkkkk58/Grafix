@@ -1,7 +1,10 @@
 package ru.itmo.grafix.ui.components.windows;
 
 import javafx.scene.Scene;
-import javafx.scene.chart.*;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -17,7 +20,7 @@ public class HistogramWindow extends Stage {
         x.setTickLabelsVisible(false);
         for (ImageHistogramData hist : histData) {
             Axis<Number> y = new NumberAxis();
-            y.setTickLabelsVisible(false);
+//            y.setTickLabelsVisible(false);
             LineChart<Number, Number> barChart = new LineChart<>(x, y);
             XYChart.Series<Number, Number> series = new XYChart.Series<>();
             for (int i = 0; i < hist.getData().length; ++i) {

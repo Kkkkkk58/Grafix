@@ -33,6 +33,13 @@ public abstract class YCbCr extends ColorSpace {
 
         return newBuffer;
     }
+
+    @Override
+    public int[] getAutocorrectionChannels() {
+        return new int[]{0};
+    }
+
+
     @Override
     public float getCoefficient() {
         return 0.5f;

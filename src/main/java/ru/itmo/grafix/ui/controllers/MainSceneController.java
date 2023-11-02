@@ -16,6 +16,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
+import ru.itmo.grafix.core.autocorrection.AutoCorrecter;
 import ru.itmo.grafix.core.autocorrection.ImageHistogramData;
 import ru.itmo.grafix.core.autocorrection.ImageHistogramExtractor;
 import ru.itmo.grafix.core.colorspace.ColorSpace;
@@ -43,20 +44,39 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 public class MainSceneController {
-    @FXML
-    public TabPane tabPane;
-    @FXML
-    public ComboBox<ColorSpace> colorSpaceList;
-
-    @FXML
-    public ComboBox<String> channelList;
-
-    private boolean wasColorSpaceChanged = true;
-    private boolean isEndlessLoop = false;
     private final List<ColorSpace> colorSpaces = List.of(
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
     private final List<Dithering> ditheringMethods = List.of(new AtkinsonDithering(), new OrderedDithering(), new RandomDithering(),
             new FloydSteinbergDithering());
+    private final ImageProcessorService imageProcessorService;
+    private final Map<String, TabContext> tabMapping = new HashMap<>();
+    @FXML
+    public TabPane tabPane;
+    @FXML
+    public ComboBox<ColorSpace> colorSpaceList;
+    @FXML
+    public ComboBox<String> channelList;
+    private boolean wasColorSpaceChanged = true;
+    private boolean isEndlessLoop = false;
+    public MainSceneController() {
+        imageProcessorService = new ImageProcessorServiceImpl();
+    }
+
+    public MainSceneController(ImageProcessorService imageProcessorService) {
+        this.imageProcessorService = imageProcessorService;
+    }
+
+    private static void changeDitheringPreview(CheckBox preview) {
+        if (!preview.isSelected()) {
+            return;
+        }
+        preview.setSelected(false);
+        preview.fire();
+    }
+
+    private static boolean isAutocorrectionParameterOutOfBounds(Double autocorrectionParameter) {
+        return autocorrectionParameter < 0 || autocorrectionParameter >= 0.5;
+    }
 
     public void initialize() {
         channelList.getSelectionModel().selectLast();
@@ -83,17 +103,6 @@ public class MainSceneController {
             channelList.setValue(image.getChannel() == 0 ? "all" : String.valueOf(image.getChannel()));
             wasColorSpaceChanged = true;
         }));
-    }
-
-    private final ImageProcessorService imageProcessorService;
-    private final Map<String, TabContext> tabMapping = new HashMap<>();
-
-    public MainSceneController() {
-        imageProcessorService = new ImageProcessorServiceImpl();
-    }
-
-    public MainSceneController(ImageProcessorService imageProcessorService) {
-        this.imageProcessorService = imageProcessorService;
     }
 
     public void saveFile() {
@@ -254,13 +263,6 @@ public class MainSceneController {
         tab.setId(tabId);
         tabMapping.put(tabId, new TabContext(image, null, null));
         tabPane.getSelectionModel().select(tab);
-        if (image.getFormat().charAt(1) == '5') {
-            channelList.setVisible(false);
-            colorSpaceList.setVisible(false);
-        } else {
-            channelList.setVisible(true);
-            colorSpaceList.setVisible(true);
-        }
     }
 
     private Tab getActiveTab() {
@@ -340,8 +342,12 @@ public class MainSceneController {
 
     private ImageView displayImage(String format, float[] data, int width, int height) {
         if (Objects.equals(format, "P6")) {
+            channelList.setVisible(true);
+            colorSpaceList.setVisible(true);
             return displayImageP6(FbConverter.convertFloatToByte(data), width, height);
         } else {
+            channelList.setVisible(false);
+            colorSpaceList.setVisible(false);
             return displayImageP5(FbConverter.convertFloatToByte(data), width, height);
         }
     }
@@ -392,16 +398,8 @@ public class MainSceneController {
         displayImage(image.getFormat(), imageBytes, image.getWidth(), image.getHeight());
     }
 
-    private static void changeDitheringPreview(CheckBox preview) {
-        if(!preview.isSelected()){
-            return;
-        }
-        preview.setSelected(false);
-        preview.fire();
-    }
-
-    private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth){
-        float[] data =  image.getColorSpace().toRGB(image.getData());
+    private float[] applyDithering(Dithering dithering, GrafixImage image, int bitDepth) {
+        float[] data = image.getColorSpace().toRGB(image.getData());
         data = GammaCorrecter.restoreGamma(image.getGamma(), data);
         data = dithering.convert(data, image.getWidth(), image.getHeight(), bitDepth, image.getGamma());
         return image.getColorSpace().fromRGB(data);
@@ -433,12 +431,13 @@ public class MainSceneController {
         imageView.setOnMouseClicked(e -> getCoordinatesOnDrawMode(e, tabContext));
     }
 
-    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format, ColorSpace colorSpace, int channel){
-        if(Objects.equals(format, "P5") || channel != 0){
+    private DrawingParamsChoiceDialog getDrawingParamsChoiceDialog(String format, ColorSpace colorSpace, int channel) {
+        if (Objects.equals(format, "P5") || channel != 0) {
             return new SingleChannelDrawingParamsChoiceDialog(format, colorSpace, channel);
         }
         return new MultiChannelDrawingParamsChoiceDialog(format, colorSpace, channel);
     }
+
     private void getCoordinatesOnDrawMode(MouseEvent e, TabContext tabContext) {
         if (tabContext.getBeginPoint() == null) {
             tabContext.setBeginPoint(new Point(e.getX(), e.getY()));
@@ -492,12 +491,9 @@ public class MainSceneController {
             throw new InvalidAutocorrectionException(String.valueOf(autocorrectionParameter));
         }
 
-        // TODO call applyAutocorrection(...) or smth
+        image = AutoCorrecter.applyAutocorrection(image, autocorrectionParameter);
 
+        tabMapping.get(getActiveTab().getId()).setImage(image);
         displayImage(image.getFormat(), image.getData(), image.getWidth(), image.getHeight());
-    }
-
-    private static boolean isAutocorrectionParameterOutOfBounds(Double autocorrectionParameter) {
-        return autocorrectionParameter < 0 || autocorrectionParameter >= 0.5;
     }
 }

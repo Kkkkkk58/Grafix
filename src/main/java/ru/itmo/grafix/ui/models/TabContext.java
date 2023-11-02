@@ -4,15 +4,6 @@ import ru.itmo.grafix.core.image.GrafixImage;
 
 public class TabContext {
     private GrafixImage image;
-
-    public void setDrawingContext(DrawingParams drawingContext) {
-        this.drawingContext = drawingContext;
-    }
-
-    public void setBeginPoint(Point point) {
-        this.beginPoint = point;
-    }
-
     private DrawingParams drawingContext;
     private Point beginPoint;
 
@@ -26,11 +17,23 @@ public class TabContext {
         return image;
     }
 
+    public void setImage(GrafixImage image) {
+        this.image = image;
+    }
+
     public DrawingParams getDrawingContext() {
         return drawingContext;
     }
 
+    public void setDrawingContext(DrawingParams drawingContext) {
+        this.drawingContext = drawingContext;
+    }
+
     public Point getBeginPoint() {
         return beginPoint;
+    }
+
+    public void setBeginPoint(Point point) {
+        this.beginPoint = point;
     }
 }

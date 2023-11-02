@@ -36,8 +36,18 @@ public class YCoCg extends ColorSpace {
     }
 
     @Override
+    public int[] getAutocorrectionChannels() {
+        return new int[]{0};
+    }
+
+    @Override
     public float getCoefficient() {
         return 0.0f;
+    }
+
+    @Override
+    public float normalize(float value) {
+        return ((byte) (value * 255) & 0xff) / 255f;
     }
 
     private float getLuma(float r, float g, float b) {

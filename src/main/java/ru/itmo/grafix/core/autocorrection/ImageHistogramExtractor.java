@@ -24,7 +24,7 @@ public class ImageHistogramExtractor {
             for (int j = 0; j < image.getWidth(); ++j) {
                 for (int c = 0; c < k; ++c) {
                     int index = bytesPerPixel * (i * image.getWidth() + j) + c + offset;
-                    int pixelValue = (int)(data[index] * 255);
+                    int pixelValue = (int) (image.getColorSpace().normalize(data[index]) * 255);
                     ++histData.get(c)[pixelValue];
                 }
             }
@@ -40,7 +40,7 @@ public class ImageHistogramExtractor {
 
     private static int[] getGeneralHistogramData(List<int[]> histData) {
         int[] generalHistogramData = new int[256];
-        for (int[] hist: histData) {
+        for (int[] hist : histData) {
             for (int i = 0; i < hist.length; ++i) {
                 generalHistogramData[i] += hist[i];
             }

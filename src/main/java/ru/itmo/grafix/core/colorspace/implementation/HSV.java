@@ -37,15 +37,23 @@ public class HSV extends ColorSpace {
             float L = newBuffer[i + 2] = V - C / 2f;
             float H = HSL.getH(buffer[i], buffer[i + 1], buffer[i + 2], C, V);
             float S = 0;
-            if(L != 1 && L != 0){
+            if (L != 1 && L != 0) {
                 S = C / V;
             }
-            newBuffer[i] = H;
-            newBuffer[i + 1] = S;
-            newBuffer[i + 2] = V;
+            newBuffer[i] = normalize(H);
+            newBuffer[i + 1] = normalize(S);
+            newBuffer[i + 2] = normalize(V);
         }
         return newBuffer;
     }
+
+
+    //TODO: think about it
+    @Override
+    public int[] getAutocorrectionChannels() {
+        return new int[]{2};
+    }
+
 
     @Override
     public float getCoefficient() {
