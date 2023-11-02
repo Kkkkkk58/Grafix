@@ -15,6 +15,10 @@ import java.io.IOException;
 import java.util.List;
 
 public class GrafixApplication extends Application {
+    public static void main(String[] args) {
+        launch();
+    }
+
     @Override
     public void start(Stage stage) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(GrafixApplication.class.getResource("main-screen-view.fxml"));
@@ -46,9 +50,5 @@ public class GrafixApplication extends Application {
             event.setDropCompleted(success);
             event.consume();
         });
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 }

@@ -7,6 +7,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class RandomDithering extends Dithering {
     private final ThreadLocalRandom rand;
+
     public RandomDithering() {
         super(DitheringType.RANDOM);
         this.rand = ThreadLocalRandom.current();
