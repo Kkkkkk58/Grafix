@@ -50,6 +50,7 @@ public class MainSceneController {
             new FloydSteinbergDithering());
     private final ImageProcessorService imageProcessorService;
     private final Map<String, TabContext> tabMapping = new HashMap<>();
+    private final Map<GrafixImage, HistogramWindow> imageToHistogramMap = new HashMap<>();
     @FXML
     public TabPane tabPane;
     @FXML
@@ -87,6 +88,7 @@ public class MainSceneController {
                 colorSpaceList.getSelectionModel().selectFirst();
                 return;
             }
+            changeTabHistogramVisibilityIfExists(oldValue, false);
             String id = newValue.getId();
             if (!tabMapping.containsKey(id)) {
                 return;
@@ -102,6 +104,7 @@ public class MainSceneController {
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
             channelList.setValue(image.getChannel() == 0 ? "all" : String.valueOf(image.getChannel()));
             wasColorSpaceChanged = true;
+            changeTabHistogramVisibilityIfExists(newValue, true);
         }));
     }
 
@@ -182,6 +185,7 @@ public class MainSceneController {
                     getSelectedItem().toRGB(ChannelDecomposer.decompose(image.getData(), ch, image.getColorSpace()))), image.getWidth(), image.getHeight());
             image.setChannel(ch);
         }
+        updateHistogramIfExists();
     }
 
     public void chooseColorSpace() {
@@ -200,6 +204,7 @@ public class MainSceneController {
         }
         getActiveTabImage().convertTo(selectedMode);
         channelList.getSelectionModel().selectLast();
+        updateHistogramIfExists();
     }
 
     public void assignGamma() {
@@ -228,6 +233,7 @@ public class MainSceneController {
         float[] data = GammaCorrecter.convertGamma(gamma, previousGamma, space.toRGB(image.getData()));
         image.setData(space.fromRGB(data));
         image.setGamma(gamma);
+        updateHistogramIfExists();
     }
 
     private GrafixImage getActiveTabImage() {
@@ -258,6 +264,7 @@ public class MainSceneController {
     private void openTab(String tabName, GrafixImage image) {
         Tab tab = new Tab(tabName);
         tab.setOnCloseRequest(getTabOnCloseRequestEvent());
+        tab.setOnClosed(event -> closeHistogramIfExists(getActiveTabImage()));
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
@@ -277,6 +284,38 @@ public class MainSceneController {
             tabPane.getTabs().remove(tab);
         }
         tabMapping.remove(tab.getId());
+    }
+
+    private void changeTabHistogramVisibilityIfExists(Tab tab, boolean makeVisible) {
+        if (tab == null) {
+            return;
+        }
+        String id = tab.getId();
+        if (!tabMapping.containsKey(id)) {
+            return;
+        }
+        GrafixImage image = tabMapping.get(id).getImage();
+        if (image != null) {
+            makeHistogramVisibleIfExists(image, makeVisible);
+        }
+    }
+
+    private void closeHistogramIfExists(GrafixImage image) {
+        HistogramWindow histogram = imageToHistogramMap.remove(image);
+        if (histogram != null) {
+            histogram.close();
+        }
+    }
+
+    private void makeHistogramVisibleIfExists(GrafixImage image,boolean makeVisible) {
+        HistogramWindow histogram = imageToHistogramMap.get(image);
+        if (histogram != null) {
+            if (makeVisible) {
+                histogram.show();
+            } else {
+                histogram.hide();
+            }
+        }
     }
 
     private EventHandler<Event> getTabOnCloseRequestEvent() {
@@ -464,6 +503,19 @@ public class MainSceneController {
         getImageViewFromScrollPane(scrollPane).setOnMouseClicked(null);
     }
 
+
+    private void updateHistogramIfExists() {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        HistogramWindow histogram = imageToHistogramMap.get(image);
+        if (histogram != null) {
+            List<ImageHistogramData> newHistogramData = ImageHistogramExtractor.getImageHistogramData(image);
+            histogram.updateHistogram(newHistogramData);
+        }
+
+    }
     public void showHistogram() {
         GrafixImage image = getActiveTabImage();
         if (image == null) {
@@ -472,8 +524,8 @@ public class MainSceneController {
 
         List<ImageHistogramData> histogramData = ImageHistogramExtractor.getImageHistogramData(image);
 
-        HistogramWindow histogramWindow = new HistogramWindow(histogramData);
-
+        HistogramWindow histogramWindow = new HistogramWindow(histogramData, image);
+        imageToHistogramMap.put(image, histogramWindow);
         histogramWindow.showAndWait();
     }
 
