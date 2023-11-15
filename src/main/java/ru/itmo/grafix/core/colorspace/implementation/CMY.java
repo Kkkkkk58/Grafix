@@ -30,10 +30,6 @@ public class CMY extends ColorSpace {
         return new int[]{0, 1, 2};
     }
 
-    @Override
-    public float[] applyAutocorrection(GrafixImage image, double ignoreCoefficient) {
-        return new float[0];
-    }
 
     @Override
     public float getCoefficient() {

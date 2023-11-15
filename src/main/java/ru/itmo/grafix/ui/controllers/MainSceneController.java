@@ -59,6 +59,7 @@ public class MainSceneController {
     public ComboBox<String> channelList;
     private boolean wasColorSpaceChanged = true;
     private boolean isEndlessLoop = false;
+
     public MainSceneController() {
         imageProcessorService = new ImageProcessorServiceImpl();
     }
@@ -104,7 +105,7 @@ public class MainSceneController {
             colorSpaceList.setValue(colorSpaceList.getItems().get(colorSpace.getIndex()));
             channelList.setValue(image.getChannel() == 0 ? "all" : String.valueOf(image.getChannel()));
             wasColorSpaceChanged = true;
-            changeTabHistogramVisibilityIfExists(newValue, true);
+//            changeTabHistogramVisibilityIfExists(newValue, true);
         }));
     }
 
@@ -264,7 +265,7 @@ public class MainSceneController {
     private void openTab(String tabName, GrafixImage image) {
         Tab tab = new Tab(tabName);
         tab.setOnCloseRequest(getTabOnCloseRequestEvent());
-        tab.setOnClosed(event -> closeHistogramIfExists(getActiveTabImage()));
+//        tab.setOnClosed(event -> closeHistogramIfExists(getActiveTabImage()));
         tabPane.getTabs().add(tab);
         String tabId = UUID.randomUUID().toString();
         tab.setId(tabId);
@@ -283,6 +284,7 @@ public class MainSceneController {
         } else {
             tabPane.getTabs().remove(tab);
         }
+        closeHistogramIfExists(tabMapping.get(tab.getId()).getImage());
         tabMapping.remove(tab.getId());
     }
 
@@ -301,13 +303,15 @@ public class MainSceneController {
     }
 
     private void closeHistogramIfExists(GrafixImage image) {
-        HistogramWindow histogram = imageToHistogramMap.remove(image);
-        if (histogram != null) {
-            histogram.close();
+        if(image != null) {
+            HistogramWindow histogram = imageToHistogramMap.remove(image);
+            if (histogram != null) {
+                histogram.close();
+            }
         }
     }
 
-    private void makeHistogramVisibleIfExists(GrafixImage image,boolean makeVisible) {
+    private void makeHistogramVisibleIfExists(GrafixImage image, boolean makeVisible) {
         HistogramWindow histogram = imageToHistogramMap.get(image);
         if (histogram != null) {
             if (makeVisible) {
@@ -516,6 +520,7 @@ public class MainSceneController {
         }
 
     }
+
     public void showHistogram() {
         GrafixImage image = getActiveTabImage();
         if (image == null) {
@@ -542,10 +547,17 @@ public class MainSceneController {
         if (isAutocorrectionParameterOutOfBounds(autocorrectionParameter)) {
             throw new InvalidAutocorrectionException(String.valueOf(autocorrectionParameter));
         }
-
+        boolean flag = false;
+        if (Objects.equals(image.getColorSpace().toString(), "HSV")) {
+            image.convertTo(new RGB());
+            flag = true;
+        }
         image = AutoCorrecter.applyAutocorrection(image, autocorrectionParameter);
 
         tabMapping.get(getActiveTab().getId()).setImage(image);
         displayImage(image.getFormat(), image.getData(), image.getWidth(), image.getHeight());
+        if (flag) {
+            image.convertTo(new HSV());
+        }
     }
 }

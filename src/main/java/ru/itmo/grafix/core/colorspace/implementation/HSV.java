@@ -51,7 +51,7 @@ public class HSV extends ColorSpace {
     //TODO: think about it
     @Override
     public int[] getAutocorrectionChannels() {
-        return new int[]{2};
+        return new int[]{1, 2, 3};
     }
 
 
