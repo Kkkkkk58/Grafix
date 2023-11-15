@@ -29,4 +29,6 @@ module ru.itmo.grafix {
     opens ru.itmo.grafix.core.dithering to javafx.fxml;
     exports ru.itmo.grafix.core.autocorrection;
     opens ru.itmo.grafix.core.autocorrection to javafx.fxml;
+    opens ru.itmo.grafix.core.scaling to javafx.fxml;
+    exports ru.itmo.grafix.core.scaling;
 }
