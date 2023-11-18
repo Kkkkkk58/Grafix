@@ -380,7 +380,6 @@ public class MainSceneController {
     private ImageView setImage(WritableImage img) {
         ImageView imageView = new ImageView(img);
         ZoomableScrollPane scrP = new ZoomableScrollPane();
-        scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         getActiveTab().setContent(scrP);
         scrP.setTarget(imageView);
         return imageView;
@@ -573,19 +572,16 @@ public class MainSceneController {
         if (image == null) {
             return;
         }
-        ScalingParamsChoiceDialog dialog = new ScalingParamsChoiceDialog(scalingMethods);
+        ScalingParamsChoiceDialog dialog = new ScalingParamsChoiceDialog(scalingMethods, image.getWidth(), image.getHeight());
         ScalingParams scalingParams = dialog.showAndWait().orElse(null);
         if (scalingParams == null) {
             return;
         }
-        System.out.println(scalingParams.getWidth());
-        System.out.println(scalingParams.getHeight());
-        System.out.println(scalingParams.getBiasX());
-        System.out.println(scalingParams.getBiasY());
         if(scalingParams.getScalingMethod().getType() == ScalingType.BC_SPLINE){
-            BCsplineScalingParams bCsplineScalingParams = (BCsplineScalingParams) scalingParams;
-            System.out.println(bCsplineScalingParams.getB());
-            System.out.println(bCsplineScalingParams.getC());
+            scalingParams = (BCsplineScalingParams) scalingParams;
         }
+        GrafixImage newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
+        tabMapping.get(getActiveTab().getId()).setImage(newImage);
+        displayImage(newImage.getFormat(), newImage.getData(), newImage.getWidth(), newImage.getHeight());
     }
 }

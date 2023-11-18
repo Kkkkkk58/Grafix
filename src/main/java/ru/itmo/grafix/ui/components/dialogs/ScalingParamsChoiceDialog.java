@@ -16,7 +16,7 @@ import java.util.List;
 
 public class ScalingParamsChoiceDialog extends Dialog<ScalingParams> {
 
-    public ScalingParamsChoiceDialog(List<Scaling> scalingList){
+    public ScalingParamsChoiceDialog(List<Scaling> scalingList, int defaultWidth, int defaultHeight){
         setTitle("Scaling params choice");
         setHeaderText(null);
         setGraphic(null);
@@ -26,8 +26,8 @@ public class ScalingParamsChoiceDialog extends Dialog<ScalingParams> {
         gridPane.setHgap(10);
         getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CLOSE);
 
-        TextField width = new TextField("300");
-        TextField height = new TextField("300");
+        TextField width = new TextField(String.valueOf(defaultWidth));
+        TextField height = new TextField(String.valueOf(defaultHeight));
         gridPane.add(new Label("Width | Height"), 0, 0);
         gridPane.add(width, 1, 0);
         gridPane.add(height, 2, 0);
@@ -60,8 +60,8 @@ public class ScalingParamsChoiceDialog extends Dialog<ScalingParams> {
     }
 
     private ScalingParams getScalingParams(TextField width, TextField height, TextField biasX, TextField biasY, Scaling scaling) {
-        float widthValue = Float.parseFloat(width.getText());
-        float heightValue = Float.parseFloat(height.getText());
+        int widthValue = Integer.parseInt(width.getText());
+        int heightValue = Integer.parseInt(height.getText());
 
         if (widthValue < 0 || heightValue < 0) {
             throw new InvalidDrawParamsException();
