@@ -32,8 +32,4 @@ public class NearestNeighbourScaling extends Scaling {
         int oldY = (int) Math.floor(sy * i);
         return getLinearCoordinate(oldX, oldY, k, oldImage.getWidth(), oldImage.getTotalChannels());
     }
-
-    private int getLinearCoordinate(int x, int y, int k, int width, int bytesPerPixel) {
-        return bytesPerPixel * (y * width + x) + k;
-    }
 }

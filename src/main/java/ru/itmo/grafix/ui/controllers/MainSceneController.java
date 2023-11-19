@@ -577,10 +577,16 @@ public class MainSceneController {
         if (scalingParams == null) {
             return;
         }
+        GrafixImage newImage;
         if(scalingParams.getScalingMethod().getType() == ScalingType.BC_SPLINE){
-            scalingParams = (BCsplineScalingParams) scalingParams;
+            BCsplineScaling bCsplineScaling = new BCsplineScaling();
+            bCsplineScaling.setB(((BCsplineScalingParams) scalingParams).getB());
+            bCsplineScaling.setC(((BCsplineScalingParams) scalingParams).getC());
+            newImage = bCsplineScaling.applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
         }
-        GrafixImage newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
+        else{
+            newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
+        }
         tabMapping.get(getActiveTab().getId()).setImage(newImage);
         displayImage(newImage.getFormat(), newImage.getData(), newImage.getWidth(), newImage.getHeight());
     }
