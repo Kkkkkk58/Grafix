@@ -53,6 +53,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#showHistogram" text="Show histogram"/>
                 <MenuItem mnemonicParsing="false" onAction="#autocorrect" text="Apply autocorrection"/>
             </Menu>
+            <MenuItem mnemonicParsing="false" onAction="#chooseScalingParams" text="Scaling"/>
             <MenuItem mnemonicParsing="false" text="Undo"/>
             <MenuItem mnemonicParsing="false" text="Redo"/>
             <SeparatorMenuItem mnemonicParsing="false"/>
