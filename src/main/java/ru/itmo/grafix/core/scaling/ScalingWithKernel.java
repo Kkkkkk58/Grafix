@@ -43,7 +43,7 @@ public abstract class ScalingWithKernel extends Scaling {
                 int start = (int) Math.ceil(filterStart - 0.5);
                 for(int ch = 0; ch < totalChannels; ch++) {
                     double val = 0;
-                    double filt = 0;
+                    double coeffSum = 0;
                     for(int k = 0; k < support * 2 + 1; ++k){
                         int inputX = start + k;
                         double x = (inputX + 0.5 - centerX) * scale;
@@ -51,9 +51,9 @@ public abstract class ScalingWithKernel extends Scaling {
                         double coeff = getKernel(x) * (0 <= y && y <=  1 ? 1 - Math.abs(y - 0.5) * 2 : 0);
                         x = Math.min(Math.max(inputX, 0), oldHeight - 1);
                         val += (PixelValueNormalizer.normalize((float) (coeff * oldData[getLinearCoordinate(i, (int) x, ch, oldWidth, totalChannels)])));
-                        filt += val;
+                        coeffSum += coeff;
                     }
-                    data[getLinearCoordinate(i, j, ch, width, totalChannels)] = (PixelValueNormalizer.normalize((float) val));
+                    data[getLinearCoordinate(i, j, ch, width, totalChannels)] = (PixelValueNormalizer.normalize((float) (val / coeffSum)));
                 }
             }
         }
@@ -75,7 +75,7 @@ public abstract class ScalingWithKernel extends Scaling {
                 int start = (int) Math.ceil(filterStart - 0.5);
                 for(int ch = 0; ch < totalChannels; ch++) {
                     double val = 0;
-                    double filt = 0;
+                    double coeffSum = 0;
                     for(int k = 0; k < support * 2 + 1; ++k){
                         int inputX = start + k;
                         double x = (inputX + 0.5 - centerX) * scale;
@@ -83,9 +83,9 @@ public abstract class ScalingWithKernel extends Scaling {
                         double coeff = getKernel(x) * (0 <= y && y <=  1 ? 1 - Math.abs(y - 0.5) * 2 : 0);
                         x = Math.min(Math.max(inputX, 0), oldWidth - 1);
                         val += (PixelValueNormalizer.normalize((float) (coeff * oldData[getLinearCoordinate((int) x, i, ch, oldWidth, totalChannels)])));
-                        filt += val;
+                        coeffSum += coeff;
                     }
-                    data[getLinearCoordinate(j, i, ch, width, totalChannels)] = (PixelValueNormalizer.normalize((float) val));
+                    data[getLinearCoordinate(j, i, ch, width, totalChannels)] = (PixelValueNormalizer.normalize((float) (val / coeffSum)));
                 }
             }
         }
