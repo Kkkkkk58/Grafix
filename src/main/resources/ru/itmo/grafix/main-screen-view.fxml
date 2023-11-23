@@ -110,5 +110,5 @@
             </graphic>
         </Menu>
     </MenuBar>
-    <TabPane fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER"/>
+    <TabPane VBox.vgrow="ALWAYS" fx:id="tabPane" tabClosingPolicy="ALL_TABS" tabDragPolicy="REORDER"/>
 </VBox>
