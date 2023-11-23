@@ -582,10 +582,10 @@ public class MainSceneController {
             BCsplineScaling bCsplineScaling = new BCsplineScaling();
             bCsplineScaling.setB(((BCsplineScalingParams) scalingParams).getB());
             bCsplineScaling.setC(((BCsplineScalingParams) scalingParams).getC());
-            newImage = bCsplineScaling.applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
+            newImage = bCsplineScaling.applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
         }
         else{
-            newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight());
+            newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
         }
         tabMapping.get(getActiveTab().getId()).setImage(newImage);
         displayImage(newImage.getFormat(), newImage.getData(), newImage.getWidth(), newImage.getHeight());
