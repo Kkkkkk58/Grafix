@@ -6,7 +6,7 @@ public class BCsplineScalingParams extends ScalingParams{
 
     private final float B;
     private final float C;
-    public BCsplineScalingParams(float width, float height, float biasX, float biasY, Scaling scalingMethod, float b, float c) {
+    public BCsplineScalingParams(int width, int height, float biasX, float biasY, Scaling scalingMethod, float b, float c) {
         super(width, height, biasX, biasY, scalingMethod);
         B = b;
         C = c;

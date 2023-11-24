@@ -6,7 +6,8 @@ import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 
 public class ZoomableScrollPane extends ScrollPane {
     private double scaleValue = 1;
@@ -20,6 +21,8 @@ public class ZoomableScrollPane extends ScrollPane {
 
     public void setTarget(Node target) {
         this.target = target;
+        ImageView ht = (ImageView) target;
+        double htt = ht.getImage().getHeight();
         this.zoomNode = new Group(target);
         setContent(outerNode(zoomNode));
 
@@ -42,7 +45,7 @@ public class ZoomableScrollPane extends ScrollPane {
     }
 
     private Node centeredNode(Node node) {
-        VBox vBox = new VBox(node);
+        StackPane vBox = new StackPane(node);
         vBox.setAlignment(Pos.CENTER);
         return vBox;
     }

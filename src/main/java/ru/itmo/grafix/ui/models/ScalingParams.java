@@ -3,13 +3,13 @@ package ru.itmo.grafix.ui.models;
 import ru.itmo.grafix.core.scaling.Scaling;
 
 public abstract class ScalingParams {
-    private final float width;
-    private final float height;
+    private final int width;
+    private final int height;
     private final float biasX;
     private final float biasY;
     private final Scaling scalingMethod;
 
-    public ScalingParams(float width, float height, float biasX, float biasY, Scaling scalingMethod) {
+    public ScalingParams(int width, int height, float biasX, float biasY, Scaling scalingMethod) {
         this.width = width;
         this.height = height;
         this.biasX = biasX;
@@ -17,11 +17,11 @@ public abstract class ScalingParams {
         this.scalingMethod = scalingMethod;
     }
 
-    public float getWidth() {
+    public int getWidth() {
         return width;
     }
 
-    public float getHeight() {
+    public int getHeight() {
         return height;
     }
 
