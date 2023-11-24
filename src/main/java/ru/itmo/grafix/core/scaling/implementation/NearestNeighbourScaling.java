@@ -33,8 +33,8 @@ public class NearestNeighbourScaling extends Scaling {
     }
 
     private int getOldCoordinate(GrafixImage oldImage, double sx, double sy, int i, int j, int k, float biasX, float biasY) {
-        int oldX = (int) Math.floor(sx * j - biasX);
-        int oldY = (int) Math.floor(sy * i - biasY);
+        int oldX = (int) Math.floor(sx * j + 2 * biasX);
+        int oldY = (int) Math.floor(sy * i + 2 * biasY);
         return getLinearCoordinate(oldX, oldY, k, oldImage.getWidth(), oldImage.getHeight(), oldImage.getTotalChannels());
     }
 }
