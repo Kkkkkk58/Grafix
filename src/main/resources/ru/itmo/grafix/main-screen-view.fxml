@@ -7,7 +7,7 @@
 <?import ru.itmo.grafix.core.colorspace.implementation.*?>
 <?import java.lang.String?>
 <VBox xmlns:fx="http://javafx.com/fxml/1" prefHeight="400.0" prefWidth="640.0"
-      xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="ru.itmo.grafix.ui.controllers.MainSceneController">
+      xmlns="http://javafx.com/javafx/17.0.2-ea" fx:controller="ru.itmo.grafix.ui.controllers.MainSceneController" alignment="CENTER">
     <MenuBar VBox.vgrow="NEVER">
         <Menu mnemonicParsing="false" text="File">
             <Menu mnemonicParsing="false" text="New">
@@ -53,6 +53,7 @@
                 <MenuItem mnemonicParsing="false" onAction="#showHistogram" text="Show histogram"/>
                 <MenuItem mnemonicParsing="false" onAction="#autocorrect" text="Apply autocorrection"/>
             </Menu>
+            <MenuItem mnemonicParsing="false" onAction="#chooseScalingParams" text="Scaling"/>
             <MenuItem mnemonicParsing="false" text="Undo"/>
             <MenuItem mnemonicParsing="false" text="Redo"/>
             <SeparatorMenuItem mnemonicParsing="false"/>

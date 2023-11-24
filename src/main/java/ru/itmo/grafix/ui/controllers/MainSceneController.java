@@ -31,12 +31,16 @@ import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.exception.InvalidAutocorrectionException;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
+import ru.itmo.grafix.core.scaling.Scaling;
+import ru.itmo.grafix.core.scaling.ScalingType;
+import ru.itmo.grafix.core.scaling.implementation.BCsplineScaling;
+import ru.itmo.grafix.core.scaling.implementation.BilinearScaling;
+import ru.itmo.grafix.core.scaling.implementation.Lanczos3Scaling;
+import ru.itmo.grafix.core.scaling.implementation.NearestNeighbourScaling;
 import ru.itmo.grafix.ui.components.dialogs.*;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 import ru.itmo.grafix.ui.components.windows.HistogramWindow;
-import ru.itmo.grafix.ui.models.DrawingParams;
-import ru.itmo.grafix.ui.models.Point;
-import ru.itmo.grafix.ui.models.TabContext;
+import ru.itmo.grafix.ui.models.*;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -48,6 +52,9 @@ public class MainSceneController {
             new RGB(), new HSL(), new HSV(), new CMY(), new YCbCr601(), new YCbCr709(), new YCoCg());
     private final List<Dithering> ditheringMethods = List.of(new AtkinsonDithering(), new OrderedDithering(), new RandomDithering(),
             new FloydSteinbergDithering());
+
+    private final List<Scaling> scalingMethods = List.of(new NearestNeighbourScaling(), new BilinearScaling(), new Lanczos3Scaling(),
+            new BCsplineScaling());
     private final ImageProcessorService imageProcessorService;
     private final Map<String, TabContext> tabMapping = new HashMap<>();
     private final Map<GrafixImage, HistogramWindow> imageToHistogramMap = new HashMap<>();
@@ -373,7 +380,6 @@ public class MainSceneController {
     private ImageView setImage(WritableImage img) {
         ImageView imageView = new ImageView(img);
         ZoomableScrollPane scrP = new ZoomableScrollPane();
-        scrP.setPrefSize(tabPane.getPrefWidth(), tabPane.getPrefHeight());
         getActiveTab().setContent(scrP);
         scrP.setTarget(imageView);
         return imageView;
@@ -559,5 +565,29 @@ public class MainSceneController {
         if (flag) {
             image.convertTo(new HSV());
         }
+    }
+
+    public void chooseScalingParams() {
+        GrafixImage image = getActiveTabImage();
+        if (image == null) {
+            return;
+        }
+        ScalingParamsChoiceDialog dialog = new ScalingParamsChoiceDialog(scalingMethods, image.getWidth(), image.getHeight());
+        ScalingParams scalingParams = dialog.showAndWait().orElse(null);
+        if (scalingParams == null) {
+            return;
+        }
+        GrafixImage newImage;
+        if(scalingParams.getScalingMethod().getType() == ScalingType.BC_SPLINE){
+            BCsplineScaling bCsplineScaling = new BCsplineScaling();
+            bCsplineScaling.setB(((BCsplineScalingParams) scalingParams).getB());
+            bCsplineScaling.setC(((BCsplineScalingParams) scalingParams).getC());
+            newImage = bCsplineScaling.applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
+        }
+        else{
+            newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
+        }
+        tabMapping.get(getActiveTab().getId()).setImage(newImage);
+        displayImage(newImage.getFormat(), newImage.getData(), newImage.getWidth(), newImage.getHeight());
     }
 }
