@@ -171,12 +171,12 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     private byte[] getImageData(byte[] decoded, int width, int height, int colorType, Map<Integer, byte[]> plt) {
         // TODO refactor
-        // FIXME
         int bytesPerPixel = (colorType == 0) ? 1 : 3;
         byte[] data = new byte[width * height * bytesPerPixel];
         int i = 0;
         for (int scanline = 0; scanline < height; ++scanline) {
             int filterType = decoded[bytesPerPixel * scanline * width + scanline] & 0xff;
+            System.out.println(filterType);
             for (int pixel = 0; pixel < width; ++pixel) {
                 if (plt == null) {
                     for (int channel = 0; channel < bytesPerPixel; ++channel) {
@@ -209,10 +209,10 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     private byte getReversePaethFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
         // TODO check types (bytes or ints)
-        int paeth = ((scanline == 0 || pixel == 0) ? 0 :
-                        getPaethValue(reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff,
-                                reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff,
-                                reversed[getRgbValueIndex(scanline - 1, pixel - 1, channel, width, bytesPerPixel)] & 0xff));
+        int left = (pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff;
+        int upper = (scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff;
+        int leftUpper = (scanline == 0 || pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel - 1, channel, width, bytesPerPixel)] & 0xff;
+        int paeth = getPaethValue(left, upper, leftUpper);
 
         return (byte) (value + paeth);
     }
@@ -231,9 +231,9 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
     }
 
     private byte getReverseAverageFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        int average = ((scanline == 0 || pixel == 0) ? 0 :
-                        (((reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff)
-                                + (reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff)) / 2));
+        int left = (pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff;
+        int upper = (scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff;
+        int average = (left + upper) / 2;
         return (byte) (value + average);
     }
 
