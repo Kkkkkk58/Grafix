@@ -176,7 +176,6 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
         int i = 0;
         for (int scanline = 0; scanline < height; ++scanline) {
             int filterType = decoded[bytesPerPixel * scanline * width + scanline] & 0xff;
-            System.out.println(filterType);
             for (int pixel = 0; pixel < width; ++pixel) {
                 if (plt == null) {
                     for (int channel = 0; channel < bytesPerPixel; ++channel) {
