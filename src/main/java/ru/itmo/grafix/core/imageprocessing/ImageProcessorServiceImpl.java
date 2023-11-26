@@ -238,12 +238,12 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
     }
 
     private byte getReverseUpFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        int up = ((scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff);
+        int up = (scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff;
         return (byte) (value + up);
     }
 
     private byte getReverseSubFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        int sub = ((pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff);
+        int sub = (pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff;
         return (byte) (value + sub);
     }
 
