@@ -16,9 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.zip.*;
 import java.util.*;
-
+import java.util.zip.Inflater;
 
 public class ImageProcessorServiceImpl implements ImageProcessorService {
     @Override
@@ -171,37 +170,32 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
     }
 
     private byte[] decompressData(byte[] data){
-        byte[] decompressedData = null;
-        Inflater inflater = new Inflater();
-        int numberOfBytesToDecompress = data.length;
-        inflater.setInput(data, 0, numberOfBytesToDecompress);
-        List<Byte> bytesDecompressedSoFar = new ArrayList<Byte>();
-        try
-        {
-            while (!inflater.needsInput())
-            {
-                byte[] bytesDecompressedBuffer = new byte[numberOfBytesToDecompress];
-                int numberOfBytesDecompressedThisTime = inflater.inflate(bytesDecompressedBuffer);
-                for (int b = 0; b < numberOfBytesDecompressedThisTime; b++)
-                {
-                    bytesDecompressedSoFar.add(bytesDecompressedBuffer[b]);
-                }
-            }
+        byte[] output = new byte[0];
 
-            decompressedData = new byte[bytesDecompressedSoFar.size()];
-            for (int b = 0; b < decompressedData.length; b++)
-            {
-                decompressedData[b] = (byte)(bytesDecompressedSoFar.get(b));
-            }
+        Inflater decompresser = new Inflater();
+        decompresser.reset();
+        decompresser.setInput(data);
 
-        }
-        catch (DataFormatException dfe)
-        {
-            dfe.printStackTrace();
+        ByteArrayOutputStream o = new ByteArrayOutputStream(data.length);
+        try {
+            byte[] buf = new byte[1024];
+            while (!decompresser.finished()) {
+                int i = decompresser.inflate(buf);
+                o.write(buf, 0, i);
+            }
+            output = o.toByteArray();
+        } catch (Exception e) {
+            output = data;
+            e.printStackTrace();
+        } finally {
+            try {
+                o.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
 
-        inflater.end();
-
-        return decompressedData;
+        decompresser.end();
+        return output;
     }
 }
