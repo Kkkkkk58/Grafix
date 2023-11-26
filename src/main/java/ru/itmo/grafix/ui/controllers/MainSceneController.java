@@ -265,7 +265,7 @@ public class MainSceneController {
     private void doOpen(String absolutePath, String fileName, ColorSpace colorSpace) {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
         openTab(fileName, image);
-        float[] data = colorSpace.toRGB(image.getData());
+        float[] data = GammaCorrecter.restoreGamma(image.getGamma(), colorSpace.toRGB(image.getData()));
         displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
