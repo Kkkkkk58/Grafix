@@ -195,7 +195,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
     }
 
     private byte getReverseFilteredValue(byte[] decoded, byte[] reversed, int filterType, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        byte value = decoded[getPngValueIndex(scanline, pixel, channel, width, bytesPerPixel)];
+        int value = decoded[getPngValueIndex(scanline, pixel, channel, width, bytesPerPixel)] & 0xff;
 
         // TODO refactor, separate filters into classes
         return switch (filterType) {
@@ -203,13 +203,13 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             case 2 -> getReverseUpFilterValue(value, reversed, scanline, pixel, channel, width, bytesPerPixel);
             case 3 -> getReverseAverageFilterValue(value, reversed, scanline, pixel, channel, width, bytesPerPixel);
             case 4 -> getReversePaethFilterValue(value, reversed, scanline, pixel, channel, width, bytesPerPixel);
-            default -> value;
+            default -> (byte) value;
         };
     }
 
-    private byte getReversePaethFilterValue(byte value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
+    private byte getReversePaethFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
         // TODO check types (bytes or ints)
-        byte paeth = (byte) ((scanline == 0 || pixel == 0) ? 0 :
+        int paeth = ((scanline == 0 || pixel == 0) ? 0 :
                         getPaethValue(reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff,
                                 reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff,
                                 reversed[getRgbValueIndex(scanline - 1, pixel - 1, channel, width, bytesPerPixel)] & 0xff));
@@ -230,20 +230,20 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
         return c;
     }
 
-    private byte getReverseAverageFilterValue(byte value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        byte average = (byte) ((scanline == 0 || pixel == 0) ? 0 :
+    private byte getReverseAverageFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
+        int average = ((scanline == 0 || pixel == 0) ? 0 :
                         (((reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff)
                                 + (reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff)) / 2));
         return (byte) (value + average);
     }
 
-    private byte getReverseUpFilterValue(byte value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        byte up = (byte) ((scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff);
+    private byte getReverseUpFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
+        int up = ((scanline == 0) ? 0 : reversed[getRgbValueIndex(scanline - 1, pixel, channel, width, bytesPerPixel)] & 0xff);
         return (byte) (value + up);
     }
 
-    private byte getReverseSubFilterValue(byte value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
-        byte sub = (byte) ((pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff);
+    private byte getReverseSubFilterValue(int value, byte[] reversed, int scanline, int pixel, int channel, int width, int bytesPerPixel) {
+        int sub = ((pixel == 0) ? 0 : reversed[getRgbValueIndex(scanline, pixel - 1, channel, width, bytesPerPixel)] & 0xff);
         return (byte) (value + sub);
     }
 
