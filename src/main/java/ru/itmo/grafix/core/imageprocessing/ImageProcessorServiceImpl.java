@@ -4,6 +4,7 @@ import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.implementation.RGB;
 import ru.itmo.grafix.core.exception.ByteReaderException;
 import ru.itmo.grafix.core.exception.ByteWriterException;
+import ru.itmo.grafix.core.exception.InvalidPngImageException;
 import ru.itmo.grafix.core.exception.UnsupportedImageFormatException;
 import ru.itmo.grafix.core.image.GrafixImage;
 
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.*;
+import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
@@ -102,18 +104,27 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
                     || format[4] != 0x1A || format[5] != 0x0A)) {
                 throw new UnsupportedImageFormatException();
             }
-            String type = "IHDR";
+            String type = "";
             Map<Integer, byte[]> plt = null;
             float gamma = 1f;
+            // TODO refactor crc32 usage, make it more abstract
+            CRC32 checksum = new CRC32();
             while (!Objects.equals(type, "IEND")) {
                 byte[] headerInfoBuffer = new byte[headerInfoSize];
                 count = br.read(headerInfoBuffer);
                 int length = ByteBuffer.wrap(headerInfoBuffer).getInt();
                 count = br.read(headerInfoBuffer);
+                checksum.update(headerInfoBuffer);
                 type = new String(headerInfoBuffer);
                 byte[] buffer = new byte[length];
                 count = br.read(buffer);
+                checksum.update(buffer);
                 count = br.read(headerInfoBuffer);
+
+                if ((int) checksum.getValue() != ByteBuffer.wrap(headerInfoBuffer).getInt()) {
+                    throw InvalidPngImageException.incorrectChecksum();
+                }
+
                 if (Objects.equals(type, "IHDR")) {
                     params = readIHDR(buffer);
                 } else if (Objects.equals(type, "PLTE")) {
@@ -129,6 +140,8 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
                 } else if (Objects.equals(type, "gAMA")) {
                     gamma = readGAMMA(buffer);
                 }
+
+                checksum.reset();
             }
 
             if (params == null) {
