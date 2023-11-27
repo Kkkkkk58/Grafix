@@ -98,7 +98,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             IHDR params = null;
             byte[] format = new byte[6];
             int count = br.read(format);
-            if (count != 6 && (format[0] != 0x4e || format[1] != 0x47 || format[2] != 0x0D || format[3] != 0x0A
+            if (count != 6 || (format[0] != 0x4e || format[1] != 0x47 || format[2] != 0x0D || format[3] != 0x0A
                     || format[4] != 0x1A || format[5] != 0x0A)) {
                 throw new UnsupportedImageFormatException();
             }
