@@ -390,7 +390,7 @@ public class MainSceneController {
     }
 
     private ImageView displayImage(String format, float[] data, int width, int height) {
-        if (Objects.equals(format, "P6") || Objects.equals(format, "PNG")) {
+        if (Objects.equals(format, "P6") || Objects.equals(format, "PNG6")) {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
             return displayImageP6(FbConverter.convertFloatToByte(data), width, height);

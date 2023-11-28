@@ -149,8 +149,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             }
             byte[] decoded = decompressor.decode();
             byte[] imageData = getImageData(decoded, params.getWidth(), params.getHeight(), params.getColorType(), plt);
-
-            GrafixImage image = new GrafixImage("PNG", params.getWidth(), params.getHeight(), 255,
+            GrafixImage image = new GrafixImage(params.getColorType() == 0 ? "PNG5" : "PNG6", params.getWidth(), params.getHeight(), 255,
                     FbConverter.convertBytesToFloat(imageData, 255), absolutePath, 0, new RGB());
             image.setGamma(gamma);
             return image;
@@ -173,9 +172,9 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
     }
 
     private Map<Integer, byte[]> processPalette(byte[] palette) {
-        Map<Integer, byte[]> plt = new HashMap<>(palette.length);
+        Map<Integer, byte[]> plt = new HashMap<>(palette.length / 3);
         int j = 0;
-        for (int i = 0; i < palette.length; ++i) {
+        for (int i = 0; i < palette.length / 3; ++i) {
             plt.put(i, new byte[]{palette[j], palette[j + 1], palette[j + 2]});
             j += 3;
         }
@@ -184,22 +183,23 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     private byte[] getImageData(byte[] decoded, int width, int height, int colorType, Map<Integer, byte[]> plt) {
         // TODO refactor
-        int bytesPerPixel = (colorType == 0) ? 1 : 3;
-        byte[] data = new byte[width * height * bytesPerPixel];
+        int bytesPerPixelInput = (colorType == 2) ? 3 : 1;
+        int bytesPerPixelOutput = (colorType == 0) ? 1 : 3;
+        byte[] data = new byte[width * height * bytesPerPixelOutput];
         int i = 0;
         for (int scanline = 0; scanline < height; ++scanline) {
-            int filterType = decoded[bytesPerPixel * scanline * width + scanline] & 0xff;
+            int filterType = decoded[bytesPerPixelInput * scanline * width + scanline] & 0xff;
             for (int pixel = 0; pixel < width; ++pixel) {
                 if (plt == null) {
-                    for (int channel = 0; channel < bytesPerPixel; ++channel) {
-                        data[i + channel] = getReverseFilteredValue(decoded, data, filterType, scanline, pixel, channel, width, bytesPerPixel);
+                    for (int channel = 0; channel < bytesPerPixelInput; ++channel) {
+                        data[i + channel] = getReverseFilteredValue(decoded, data, filterType, scanline, pixel, channel, width, bytesPerPixelInput);
                     }
                 } else {
-                    int paletteColor = decoded[getPngValueIndex(scanline, pixel, 0, width, bytesPerPixel)] & 0xff;
+                    int paletteColor = getReverseFilteredValue(decoded, data, filterType, scanline, pixel, 0, width, bytesPerPixelInput) & 0xff;
                     byte[] color = plt.get(paletteColor);
-                    System.arraycopy(color, 0, data, i, bytesPerPixel);
+                    System.arraycopy(color, 0, data, i, color.length);
                 }
-                i += bytesPerPixel;
+                i += bytesPerPixelOutput;
             }
         }
 
