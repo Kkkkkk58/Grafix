@@ -149,13 +149,24 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
             }
             byte[] decoded = decompressor.decode();
             byte[] imageData = getImageData(decoded, params.getWidth(), params.getHeight(), params.getColorType(), plt);
-            GrafixImage image = new GrafixImage(params.getColorType() == 0 ? "PNG5" : "PNG6", params.getWidth(), params.getHeight(), 255,
-                    FbConverter.convertBytesToFloat(imageData, 255), absolutePath, 0, new RGB());
+            float[] correctedImageData = applyGammaToImageData(imageData, gamma);
+            GrafixImage image = new GrafixImage(
+                    params.getColorType() == 0 ? "PNG5" : "PNG6",
+                    params.getWidth(), params.getHeight(),
+                    255,
+                    correctedImageData,
+                    absolutePath,
+                    0,
+                    new RGB());
             image.setGamma(gamma);
             return image;
         } catch (IOException inputException) {
             throw new ByteReaderException();
         }
+    }
+
+    private float[] applyGammaToImageData(byte[] imageData, float gamma) {
+        return GammaCorrecter.convertGamma(gamma, 1, FbConverter.convertBytesToFloat(imageData, 255));
     }
 
     private IHDR readIHDR(byte[] chunk) {
