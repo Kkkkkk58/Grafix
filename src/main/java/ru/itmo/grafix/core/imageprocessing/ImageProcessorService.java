@@ -9,4 +9,6 @@ public interface ImageProcessorService {
     GrafixImage open(String absolutePath, ColorSpace colorSpace);
 
     ByteArrayOutputStream write(GrafixImage image);
+
+    ByteArrayOutputStream write(GrafixImage image, String format);
 }

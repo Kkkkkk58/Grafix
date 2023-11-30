@@ -76,6 +76,10 @@ public class GrafixImage {
         return gamma;
     }
 
+    public boolean isGrayscale() {
+        return data.length == width * height;
+    }
+
     public void setChannel(int channel) {
         this.channel = channel;
     }

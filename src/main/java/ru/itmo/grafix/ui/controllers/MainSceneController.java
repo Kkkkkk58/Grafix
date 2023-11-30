@@ -254,7 +254,7 @@ public class MainSceneController {
     }
 
     private void doSave(String absolutePath, GrafixImage image) {
-        ByteArrayOutputStream stream = imageProcessorService.write(image);
+        ByteArrayOutputStream stream = imageProcessorService.write(image, "P6");
         try (OutputStream fileStream = new FileOutputStream(absolutePath)) {
             stream.writeTo(fileStream);
         } catch (IOException e) {
