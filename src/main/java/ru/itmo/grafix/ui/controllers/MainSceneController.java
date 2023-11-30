@@ -13,7 +13,7 @@ import javafx.scene.image.PixelFormat;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.StackPane;
 import javafx.stage.FileChooser;
 import javafx.util.Pair;
 import ru.itmo.grafix.core.autocorrection.AutoCorrecter;
@@ -265,7 +265,7 @@ public class MainSceneController {
     private void doOpen(String absolutePath, String fileName, ColorSpace colorSpace) {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
         openTab(fileName, image);
-        float[] data = colorSpace.toRGB(image.getData());
+        float[] data = GammaCorrecter.restoreGamma(image.getGamma(), colorSpace.toRGB(image.getData()));
         displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
@@ -390,7 +390,7 @@ public class MainSceneController {
     }
 
     private ImageView displayImage(String format, float[] data, int width, int height) {
-        if (Objects.equals(format, "P6")) {
+        if (Objects.equals(format, "P6") || Objects.equals(format, "PNG6")) {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
             return displayImageP6(FbConverter.convertFloatToByte(data), width, height);
@@ -455,8 +455,8 @@ public class MainSceneController {
     }
 
     private ImageView getImageViewFromScrollPane(ScrollPane scrollPane) {
-        VBox vbox = (VBox) scrollPane.getContent();
-        Group group = (Group) vbox.getChildren().get(0);
+        StackPane stackPane = (StackPane) scrollPane.getContent();
+        Group group = (Group) stackPane.getChildren().get(0);
 
         return (ImageView) group.getChildren().get(0);
     }
