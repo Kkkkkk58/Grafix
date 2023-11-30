@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import java.util.*;
 import java.util.zip.CRC32;
 import java.util.zip.DataFormatException;
+import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
 public class ImageProcessorServiceImpl implements ImageProcessorService {
@@ -82,7 +83,7 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
                 writeGAMAChunk(image.getGamma(), baos);
                 imageData = GammaCorrecter.restoreGamma(image.getGamma(), imageData);
             }
-            writeIDATs();
+            writeIDATs(FbConverter.convertFloatToByte(imageData), image.getWidth(), image.getHeight(), image.isGrayscale() ? 1 : 3, baos);
             writeIEND(baos);
             return baos;
         } catch (IOException ignored) {
@@ -90,12 +91,49 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
         }
     }
 
-    private void writeIDATs() {
-        return;
+    private void writeIDATs(byte[] imageData, int width, int height, int bytesPerPixel, ByteArrayOutputStream baos) throws IOException {
+        // TODO split into chunks
+        byte[] filteredData = getFilteredData(imageData, width, height, bytesPerPixel);
+        byte[] compressedData = getCompressedData(filteredData);
+
+        writeChunk(baos, "IDAT", compressedData);
     }
 
-    private void writeIEND(ByteArrayOutputStream baos) {
+    private byte[] getFilteredData(byte[] imageData, int width, int height, int bytesPerPixel) {
+        try (ByteArrayOutputStream filteredDataStream = new ByteArrayOutputStream(imageData.length + height)) {
+            for (int i = 0; i < height; ++i) {
+                filteredDataStream.write(0); // NONE filter
+                // TODO replace by filter.apply(Arrays.copyOfRange(..))
+                filteredDataStream.write(Arrays.copyOfRange(imageData, bytesPerPixel * i * width, bytesPerPixel * (i + 1) * width));
+            }
 
+            return filteredDataStream.toByteArray();
+        } catch (IOException ignored) {
+            throw new ByteWriterException();
+        }
+    }
+
+    private byte[] getCompressedData(byte[] filteredData) {
+        Deflater deflater = new Deflater();
+        deflater.setInput(filteredData);
+        deflater.finish();
+
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            byte[] buffer = new byte[1024];
+            while (!deflater.finished()) {
+                int length = deflater.deflate(buffer);
+                baos.write(buffer, 0, length);
+            }
+
+            deflater.end();
+            return baos.toByteArray();
+        } catch (IOException ignored) {
+            throw new ByteWriterException();
+        }
+    }
+
+    private void writeIEND(ByteArrayOutputStream baos) throws IOException {
+        writeChunk(baos, "IEND", new byte[]{});
     }
 
     private void writeGAMAChunk(float gamma, ByteArrayOutputStream baos) throws IOException {
