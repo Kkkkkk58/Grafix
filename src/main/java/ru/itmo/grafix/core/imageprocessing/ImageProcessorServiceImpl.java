@@ -26,6 +26,9 @@ import java.util.zip.Inflater;
 public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     private static final int PNG_GAMMA_DIVISOR = 100000;
+    private static final byte[] PNG_HEADER_BYTES =
+            new byte[] { (byte) 0x89, (byte) 0x50, (byte) 0x4e, (byte) 0x47, (byte) 0x0d, (byte) 0x0a, (byte) 0x1a, (byte) 0x0a };
+
     @Override
     public GrafixImage open(String absolutePath, ColorSpace colorSpace) {
         try (FileInputStream br = new FileInputStream(absolutePath)) {
@@ -44,9 +47,23 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
 
     @Override
     public ByteArrayOutputStream write(GrafixImage image) {
+        return write(image, image.getFormat());
+    }
+
+    @Override
+    public ByteArrayOutputStream write(GrafixImage image, String format) {
         image = ChannelDecomposer.getDecomposedImage(image);
+        if (format.startsWith("PNG")) {
+            return writePng(image);
+        } else if (format.startsWith("P")) {
+            return writePnm(image);
+        }
+        throw new UnsupportedImageFormatException();
+    }
+
+    private ByteArrayOutputStream writePnm(GrafixImage image) {
         String header =
-                image.getFormat() + " " + image.getWidth() + " " + image.getHeight() + " " + image.getMaxVal() + " ";
+                image.getFormat().replace("PNG", "P") + " " + image.getWidth() + " " + image.getHeight() + " " + image.getMaxVal() + " ";
         try (ByteArrayOutputStream stream = new ByteArrayOutputStream(header.length() + image.getData().length + 1)) {
             stream.write(header.getBytes());
             stream.write(FbConverter.convertFloatToByte(image.getData()));
@@ -54,6 +71,73 @@ public class ImageProcessorServiceImpl implements ImageProcessorService {
         } catch (IOException outputException) {
             throw new ByteWriterException();
         }
+    }
+
+    private ByteArrayOutputStream writePng(GrafixImage image) {
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+            baos.write(PNG_HEADER_BYTES);
+            writeIHDRChunk(image, baos);
+            float[] imageData = image.getData();
+            if (image.getGamma() != 1) {
+                writeGAMAChunk(image.getGamma(), baos);
+                imageData = GammaCorrecter.restoreGamma(image.getGamma(), imageData);
+            }
+            writeIDATs();
+            writeIEND(baos);
+            return baos;
+        } catch (IOException ignored) {
+            throw new ByteWriterException();
+        }
+    }
+
+    private void writeIDATs() {
+        return;
+    }
+
+    private void writeIEND(ByteArrayOutputStream baos) {
+
+    }
+
+    private void writeGAMAChunk(float gamma, ByteArrayOutputStream baos) throws IOException {
+        int scaledGamma = (int) (gamma * PNG_GAMMA_DIVISOR);
+        byte[] gammaBytes = intToByteArray(scaledGamma);
+        writeChunk(baos, "gAMA", gammaBytes);
+    }
+
+    private void writeIHDRChunk(GrafixImage image, ByteArrayOutputStream baos) {
+        try (ByteArrayOutputStream dataStream = new ByteArrayOutputStream()) {
+            dataStream.write(intToByteArray(image.getWidth()));
+            dataStream.write(intToByteArray(image.getHeight()));
+            // TODO refactor
+            dataStream.write(8);
+            dataStream.write(image.isGrayscale() ? 0 : 2);
+            dataStream.write(0); // compression method
+            dataStream.write(0); // filter method
+            dataStream.write(0); // interlace method
+
+            writeChunk(baos, "IHDR", dataStream.toByteArray());
+        } catch (IOException ignored) {
+            throw new ByteWriterException();
+        }
+    }
+
+    private void writeChunk(ByteArrayOutputStream baos, String name, byte[] data) throws IOException {
+        baos.write(intToByteArray(data.length));
+        baos.write(name.getBytes());
+        CRC32 checksum = new CRC32();
+        checksum.update(name.getBytes());
+        baos.write(data);
+        checksum.update(data);
+        baos.write(intToByteArray((int) checksum.getValue()));
+    }
+
+    private byte[] intToByteArray(int value) {
+        return new byte[] {
+                (byte)(value >>> 24),
+                (byte)(value >>> 16),
+                (byte)(value >>> 8),
+                (byte) value
+        };
     }
 
     private String readUntilWhitespace(InputStream br) throws IOException {

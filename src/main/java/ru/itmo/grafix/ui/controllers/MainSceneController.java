@@ -121,7 +121,7 @@ public class MainSceneController {
             return;
         }
         GrafixImage image = getActiveTabImage();
-        doSave(image.getPath(), image);
+        doSave(image.getPath(), image, image.getFormat());
     }
 
     public void saveFileAs() {
@@ -253,8 +253,8 @@ public class MainSceneController {
         return tabMapping.get(activeTabId).getImage();
     }
 
-    private void doSave(String absolutePath, GrafixImage image) {
-        ByteArrayOutputStream stream = imageProcessorService.write(image);
+    private void doSave(String absolutePath, GrafixImage image, String format) {
+        ByteArrayOutputStream stream = imageProcessorService.write(image, format);
         try (OutputStream fileStream = new FileOutputStream(absolutePath)) {
             stream.writeTo(fileStream);
         } catch (IOException e) {
@@ -348,15 +348,25 @@ public class MainSceneController {
         if (getActiveTab() == null) {
             return null;
         }
-
+        FileChooser.ExtensionFilter pnm = new FileChooser.ExtensionFilter("PNM", "*.pnm");
+        FileChooser.ExtensionFilter png = new FileChooser.ExtensionFilter("PNG", "*.png");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(pnm, png);
+
+        GrafixImage image = getActiveTabImage();
+        if (image.getFormat().startsWith("PNG")) {
+            fileChooser.setSelectedExtensionFilter(png);
+        } else {
+            fileChooser.setSelectedExtensionFilter(pnm);
+        }
+
         File file = fileChooser.showSaveDialog(null);
         if (file == null) {
             return null;
         }
 
-        GrafixImage image = getActiveTabImage();
-        doSave(file.getAbsolutePath(), image);
+        String extenstion = fileChooser.getSelectedExtensionFilter().getDescription() + (image.isGrayscale() ? "5" : "6");
+                doSave(file.getAbsolutePath(), image, extenstion);
 
         return file;
     }
