@@ -1,6 +1,5 @@
 package ru.itmo.grafix.core.colorspace;
 
-import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.PixelValueNormalizer;
 
 import java.util.Objects;

@@ -2,7 +2,6 @@ package ru.itmo.grafix.core.colorspace.implementation;
 
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 import ru.itmo.grafix.core.colorspace.ColorSpaceType;
-import ru.itmo.grafix.core.image.GrafixImage;
 
 public class CMY extends ColorSpace {
     public CMY() {
