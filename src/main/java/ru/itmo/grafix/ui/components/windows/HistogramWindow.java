@@ -2,7 +2,10 @@ package ru.itmo.grafix.ui.components.windows;
 
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.chart.*;
+import javafx.scene.chart.Axis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;

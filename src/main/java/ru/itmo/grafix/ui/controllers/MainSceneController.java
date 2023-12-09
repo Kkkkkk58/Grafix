@@ -30,7 +30,7 @@ import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
 import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.exception.InvalidAutocorrectionException;
 import ru.itmo.grafix.core.filtering.Filter;
-import ru.itmo.grafix.core.filtering.implementation.LinearAveragingFilter;
+import ru.itmo.grafix.core.filtering.implementation.*;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.core.scaling.Scaling;
@@ -59,7 +59,9 @@ public class MainSceneController {
     private final List<Scaling> scalingMethods = List.of(new NearestNeighbourScaling(), new BilinearScaling(), new Lanczos3Scaling(),
             new BCsplineScaling());
 
-    private final List<Filter> filterAlgorithms = List.of(new LinearAveragingFilter());
+    private final List<Filter> filterAlgorithms = List.of(new ThresholdFilter(), new ThresholdOtsuFilter(), new MedianFilter(), new GaussianFilter(),
+            new LinearAveragingFilter(), new UnsharpMaskingFilter(), new ContrastAdaptiveSharpeningFilter(),
+            new SobelFilter(), new CannyEdgeDetectorFilter());
     private final ImageProcessorService imageProcessorService;
     private final Map<String, TabContext> tabMapping = new HashMap<>();
     private final Map<GrafixImage, HistogramWindow> imageToHistogramMap = new HashMap<>();
@@ -249,17 +251,20 @@ public class MainSceneController {
         updateHistogramIfExists();
     }
 
-    public void applyFilter(){
+    public void applyFilter() {
         GrafixImage image = getActiveTabImage();
-        if(image == null){
+        if (image == null) {
             return;
         }
         Dialog<Filter> dialog = new FilterParamsChoiceDialog(filterAlgorithms);
         Filter result = dialog.showAndWait().orElse(null);
-        if(result == null){
+        if (result == null) {
             return;
         }
-        result.setParams();
+        if (!result.setParams()) {
+            return;
+        }
+
     }
 
     private GrafixImage getActiveTabImage() {
@@ -328,7 +333,7 @@ public class MainSceneController {
     }
 
     private void closeHistogramIfExists(GrafixImage image) {
-        if(image != null) {
+        if (image != null) {
             HistogramWindow histogram = imageToHistogramMap.remove(image);
             if (histogram != null) {
                 histogram.close();
@@ -384,7 +389,7 @@ public class MainSceneController {
         }
 
         String extenstion = fileChooser.getSelectedExtensionFilter().getDescription() + (image.isGrayscale() ? "5" : "6");
-                doSave(file.getAbsolutePath(), image, extenstion);
+        doSave(file.getAbsolutePath(), image, extenstion);
 
         return file;
     }
@@ -606,13 +611,12 @@ public class MainSceneController {
             return;
         }
         GrafixImage newImage;
-        if(scalingParams.getScalingMethod().getType() == ScalingType.BC_SPLINE){
+        if (scalingParams.getScalingMethod().getType() == ScalingType.BC_SPLINE) {
             BCsplineScaling bCsplineScaling = new BCsplineScaling();
             bCsplineScaling.setB(((BCsplineScalingParams) scalingParams).getB());
             bCsplineScaling.setC(((BCsplineScalingParams) scalingParams).getC());
             newImage = bCsplineScaling.applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
-        }
-        else{
+        } else {
             newImage = scalingParams.getScalingMethod().applyScaling(image, scalingParams.getWidth(), scalingParams.getHeight(), scalingParams.getBiasX(), scalingParams.getBiasY());
         }
         tabMapping.get(getActiveTab().getId()).setImage(newImage);

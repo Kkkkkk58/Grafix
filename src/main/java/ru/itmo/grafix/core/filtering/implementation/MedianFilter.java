@@ -4,11 +4,11 @@ import ru.itmo.grafix.core.filtering.Filter;
 import ru.itmo.grafix.core.filtering.FilterType;
 import ru.itmo.grafix.ui.components.dialogs.filters.RadiusChoiceDialog;
 
-public class LinearAveragingFilter extends Filter {
+public class MedianFilter extends Filter {
     private int radius = 1;
 
-    public LinearAveragingFilter() {
-        super(FilterType.LINEAR);
+    public MedianFilter() {
+        super(FilterType.MEDIAN);
     }
 
     public void setRadius(int radius) {

@@ -13,5 +13,5 @@ public abstract class Filter {
         return type.getName();
     }
 
-    public abstract void setParams();
+    public abstract boolean setParams();
 }
