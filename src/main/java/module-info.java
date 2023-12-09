@@ -31,4 +31,7 @@ module ru.itmo.grafix {
     opens ru.itmo.grafix.core.autocorrection to javafx.fxml;
     opens ru.itmo.grafix.core.scaling to javafx.fxml;
     exports ru.itmo.grafix.core.scaling;
+    exports ru.itmo.grafix.ui.components.dialogs.filters;
+    opens ru.itmo.grafix.ui.components.dialogs.filters to javafx.fxml;
+    exports ru.itmo.grafix.core.filtering;
 }

@@ -29,6 +29,8 @@ import ru.itmo.grafix.core.dithering.implementation.RandomDithering;
 import ru.itmo.grafix.core.drawing.DrawingAlgorithm;
 import ru.itmo.grafix.core.drawing.WuAlgorithm;
 import ru.itmo.grafix.core.exception.InvalidAutocorrectionException;
+import ru.itmo.grafix.core.filtering.Filter;
+import ru.itmo.grafix.core.filtering.implementation.LinearAveragingFilter;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.core.imageprocessing.*;
 import ru.itmo.grafix.core.scaling.Scaling;
@@ -38,6 +40,7 @@ import ru.itmo.grafix.core.scaling.implementation.BilinearScaling;
 import ru.itmo.grafix.core.scaling.implementation.Lanczos3Scaling;
 import ru.itmo.grafix.core.scaling.implementation.NearestNeighbourScaling;
 import ru.itmo.grafix.ui.components.dialogs.*;
+import ru.itmo.grafix.ui.components.dialogs.filters.FilterParamsChoiceDialog;
 import ru.itmo.grafix.ui.components.scrollpane.ZoomableScrollPane;
 import ru.itmo.grafix.ui.components.windows.HistogramWindow;
 import ru.itmo.grafix.ui.models.*;
@@ -55,6 +58,8 @@ public class MainSceneController {
 
     private final List<Scaling> scalingMethods = List.of(new NearestNeighbourScaling(), new BilinearScaling(), new Lanczos3Scaling(),
             new BCsplineScaling());
+
+    private final List<Filter> filterAlgorithms = List.of(new LinearAveragingFilter());
     private final ImageProcessorService imageProcessorService;
     private final Map<String, TabContext> tabMapping = new HashMap<>();
     private final Map<GrafixImage, HistogramWindow> imageToHistogramMap = new HashMap<>();
@@ -242,6 +247,19 @@ public class MainSceneController {
         image.setData(space.fromRGB(data));
         image.setGamma(gamma);
         updateHistogramIfExists();
+    }
+
+    public void applyFilter(){
+        GrafixImage image = getActiveTabImage();
+        if(image == null){
+            return;
+        }
+        Dialog<Filter> dialog = new FilterParamsChoiceDialog(filterAlgorithms);
+        Filter result = dialog.showAndWait().orElse(null);
+        if(result == null){
+            return;
+        }
+        result.setParams();
     }
 
     private GrafixImage getActiveTabImage() {
