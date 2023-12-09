@@ -121,7 +121,7 @@ public class MainSceneController {
             return;
         }
         GrafixImage image = getActiveTabImage();
-        doSave(image.getPath(), image);
+        doSave(image.getPath(), image, image.getFormat());
     }
 
     public void saveFileAs() {
@@ -253,8 +253,8 @@ public class MainSceneController {
         return tabMapping.get(activeTabId).getImage();
     }
 
-    private void doSave(String absolutePath, GrafixImage image) {
-        ByteArrayOutputStream stream = imageProcessorService.write(image);
+    private void doSave(String absolutePath, GrafixImage image, String format) {
+        ByteArrayOutputStream stream = imageProcessorService.write(image, format);
         try (OutputStream fileStream = new FileOutputStream(absolutePath)) {
             stream.writeTo(fileStream);
         } catch (IOException e) {
@@ -265,7 +265,7 @@ public class MainSceneController {
     private void doOpen(String absolutePath, String fileName, ColorSpace colorSpace) {
         GrafixImage image = imageProcessorService.open(absolutePath, colorSpace);
         openTab(fileName, image);
-        float[] data = colorSpace.toRGB(image.getData());
+        float[] data = GammaCorrecter.restoreGamma(image.getGamma(), colorSpace.toRGB(image.getData()));
         displayImage(image.getFormat(), data, image.getWidth(), image.getHeight());
     }
 
@@ -348,15 +348,25 @@ public class MainSceneController {
         if (getActiveTab() == null) {
             return null;
         }
-
+        FileChooser.ExtensionFilter pnm = new FileChooser.ExtensionFilter("PNM", "*.pnm");
+        FileChooser.ExtensionFilter png = new FileChooser.ExtensionFilter("PNG", "*.png");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().addAll(pnm, png);
+
+        GrafixImage image = getActiveTabImage();
+        if (image.getFormat().startsWith("PNG")) {
+            fileChooser.setSelectedExtensionFilter(png);
+        } else {
+            fileChooser.setSelectedExtensionFilter(pnm);
+        }
+
         File file = fileChooser.showSaveDialog(null);
         if (file == null) {
             return null;
         }
 
-        GrafixImage image = getActiveTabImage();
-        doSave(file.getAbsolutePath(), image);
+        String extenstion = fileChooser.getSelectedExtensionFilter().getDescription() + (image.isGrayscale() ? "5" : "6");
+                doSave(file.getAbsolutePath(), image, extenstion);
 
         return file;
     }
@@ -390,7 +400,7 @@ public class MainSceneController {
     }
 
     private ImageView displayImage(String format, float[] data, int width, int height) {
-        if (Objects.equals(format, "P6")) {
+        if (Objects.equals(format, "P6") || Objects.equals(format, "PNG6")) {
             channelList.setVisible(true);
             colorSpaceList.setVisible(true);
             return displayImageP6(FbConverter.convertFloatToByte(data), width, height);

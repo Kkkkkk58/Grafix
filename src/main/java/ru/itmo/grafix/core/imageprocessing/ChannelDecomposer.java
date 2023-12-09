@@ -46,7 +46,14 @@ public class ChannelDecomposer {
         for (int i = 0; i < newData.length; ++i) {
             newData[i] = image.getData()[i * 3 + channel];
         }
-        return new GrafixImage("P5", image.getWidth(), image.getHeight(), image.getMaxVal(), newData, image.getPath(),
-                image.getHeaderSize(), image.getColorSpace());
+        return new GrafixImage(
+                image.getFormat().replace("6", "5"),
+                image.getWidth(),
+                image.getHeight(),
+                image.getMaxVal(),
+                newData,
+                image.getPath(),
+                image.getHeaderSize(),
+                image.getColorSpace());
     }
 }
