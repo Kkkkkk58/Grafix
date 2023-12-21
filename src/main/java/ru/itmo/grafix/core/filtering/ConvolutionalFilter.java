@@ -46,7 +46,7 @@ public abstract class ConvolutionalFilter extends Filter {
             }
         }
 
-        return new GrafixImage(
+        image = new GrafixImage(
                 image.getFormat(),
                 image.getWidth(),
                 image.getHeight(),
@@ -56,9 +56,15 @@ public abstract class ConvolutionalFilter extends Filter {
                 image.getHeaderSize(),
                 image.getColorSpace()
         );
+
+        return postprocessImage(image);
     }
 
     protected GrafixImage preprocessImage(GrafixImage image) {
+        return image;
+    }
+
+    protected GrafixImage postprocessImage(GrafixImage image) {
         return image;
     }
 
