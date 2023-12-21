@@ -24,7 +24,7 @@ public class CannyEdgeDetectorFilter extends GradientCountingFilter {
     @Override
     public boolean setParams() {
         setRadius(CANNY_RADIUS);
-        gaussianFilter.setSigma(CANNY_RADIUS);
+        gaussianFilter.setSigma(3);
         return true;
     }
 
