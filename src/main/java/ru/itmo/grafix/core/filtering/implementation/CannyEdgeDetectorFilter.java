@@ -24,7 +24,7 @@ public class CannyEdgeDetectorFilter extends GradientCountingFilter {
     @Override
     public boolean setParams() {
         setRadius(CANNY_RADIUS);
-        gaussianFilter.setSigma(3);
+        gaussianFilter.setSigma(1);
         return true;
     }
 
@@ -34,10 +34,10 @@ public class CannyEdgeDetectorFilter extends GradientCountingFilter {
         double gradientY = getGradientY(data);
 
         double theta = Math.atan2(gradientY, gradientX);
-        if (theta < 0) {
-            theta += Math.PI;
-        }
         double angle = theta * 180.0 / Math.PI;
+        if (angle < 0) {
+            angle += 180;
+        }
 
         return PixelValueNormalizer.normalize(getNonMaxSuppressedValue(angle, data));
     }
