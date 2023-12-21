@@ -2,7 +2,7 @@ package ru.itmo.grafix.core.image;
 
 import ru.itmo.grafix.core.colorspace.ColorSpace;
 
-public class GrafixImage {
+public class GrafixImage implements Cloneable {
     private String format;
     private int width;
     private int height;
@@ -103,5 +103,15 @@ public class GrafixImage {
 
     public void setData(float[] newData) {
         this.data = newData;
+    }
+
+    @Override
+    public GrafixImage clone() {
+        try {
+            GrafixImage clone = (GrafixImage) super.clone();
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError();
+        }
     }
 }

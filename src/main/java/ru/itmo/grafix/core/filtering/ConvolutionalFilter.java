@@ -34,6 +34,7 @@ public abstract class ConvolutionalFilter extends Filter {
 
     @Override
     public GrafixImage apply(GrafixImage image) {
+        image = preprocessImage(image);
         float[] buffer = new float[image.getData().length];
         for(int y = 0; y < image.getHeight(); ++y){
             for(int x = 0; x < image.getWidth(); ++x){
@@ -55,6 +56,10 @@ public abstract class ConvolutionalFilter extends Filter {
                 image.getHeaderSize(),
                 image.getColorSpace()
         );
+    }
+
+    protected GrafixImage preprocessImage(GrafixImage image) {
+        return image;
     }
 
     private float[] getMatrixValues(int centerX, int centerY, float[] data, int width, int height, int channel, int bytesPerPixel) {
