@@ -257,14 +257,18 @@ public class MainSceneController {
             return;
         }
         Dialog<Filter> dialog = new FilterParamsChoiceDialog(filterAlgorithms);
-        Filter result = dialog.showAndWait().orElse(null);
-        if (result == null) {
+        Filter filter = dialog.showAndWait().orElse(null);
+        if (filter == null) {
             return;
         }
-        if (!result.setParams()) {
+        if (!filter.setParams()) {
             return;
         }
 
+        GrafixImage filteredImage = filter.apply(image);
+
+        tabMapping.get(getActiveTab().getId()).setImage(filteredImage);
+        displayImage(filteredImage.getFormat(), filteredImage.getData(), filteredImage.getWidth(), filteredImage.getHeight());
     }
 
     private GrafixImage getActiveTabImage() {

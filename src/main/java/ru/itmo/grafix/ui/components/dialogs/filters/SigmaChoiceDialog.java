@@ -18,7 +18,7 @@ public class SigmaChoiceDialog extends TextInputDialog {
         }
         try {
             double result = Double.parseDouble(inputValue);
-            if (result < 0 || result > 1) {
+            if (result < 0.1 || result > 12) {
                 throw new InvalidFilterParamsException();
             }
             return result;

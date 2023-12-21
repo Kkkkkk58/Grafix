@@ -1,30 +1,19 @@
 package ru.itmo.grafix.core.filtering.implementation;
 
-import ru.itmo.grafix.core.filtering.Filter;
-import ru.itmo.grafix.core.filtering.FilterType;
-import ru.itmo.grafix.ui.components.dialogs.filters.RadiusChoiceDialog;
+import java.util.stream.IntStream;
 
-public class LinearAveragingFilter extends Filter {
-    private int radius = 1;
+import ru.itmo.grafix.core.filtering.ConvolutionalFilter;
+import ru.itmo.grafix.core.filtering.FilterType;
+
+public class LinearAveragingFilter extends ConvolutionalFilter {
 
     public LinearAveragingFilter() {
         super(FilterType.LINEAR);
     }
 
-    public void setRadius(int radius) {
-        this.radius = radius;
-    }
 
-    public int getRadius() {
-        return radius;
-    }
     @Override
-    public boolean setParams() {
-        Integer r = RadiusChoiceDialog.getRadiusInput();
-        if(r == null){
-            return false;
-        }
-        radius = r;
-        return true;
+    protected float applyInternal(float[] data) {
+        return (float) IntStream.range(0, data.length).mapToDouble(i -> data[i]).average().orElse(0.0);
     }
 }

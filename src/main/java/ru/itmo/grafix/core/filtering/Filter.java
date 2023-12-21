@@ -1,5 +1,7 @@
 package ru.itmo.grafix.core.filtering;
 
+import ru.itmo.grafix.core.image.GrafixImage;
+
 public abstract class Filter {
 
     private final FilterType type;
@@ -14,4 +16,6 @@ public abstract class Filter {
     }
 
     public abstract boolean setParams();
+
+    public abstract GrafixImage apply(GrafixImage image);
 }
