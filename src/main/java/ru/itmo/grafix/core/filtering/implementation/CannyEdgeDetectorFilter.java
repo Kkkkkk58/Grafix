@@ -51,7 +51,7 @@ public class CannyEdgeDetectorFilter extends GradientCountingFilter {
     @Override
     protected GrafixImage postprocessImage(GrafixImage image) {
         float[] data = image.getData();
-        float highThreshold = (float) (HIGH_THRESHOLD_RATIO * IntStream.range(0, data.length).mapToDouble(i -> data[i]).max().orElse(1.0));
+        float highThreshold = (float) (HIGH_THRESHOLD_RATIO * IntStream.range(0, data.length).mapToDouble(i -> data[i]).max().orElse(0.0));
         float lowThreshold = (float) (highThreshold * LOW_THRESHOLD_RATIO);
         float weak = 25.0f / 255.0f;
         float strong = 1.0f;
