@@ -46,7 +46,6 @@ public class SobelFilter extends ConvolutionalFilter {
         double gradientX = IntStream.range(0, data.length).mapToDouble(i -> data[i] * MASK_X[i]).sum();
         double gradientY = IntStream.range(0, data.length).mapToDouble(i -> data[i] * MASK_Y[i]).sum();
 
-        // FIXME 3-channel image
         return PixelValueNormalizer.normalize((float) Math.sqrt(gradientX * gradientX + gradientY * gradientY));
     }
 
