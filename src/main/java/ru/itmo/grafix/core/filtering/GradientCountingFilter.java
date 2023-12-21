@@ -21,12 +21,12 @@ public abstract class GradientCountingFilter extends ConvolutionalFilter {
     private static final Set<ColorSpace> Y_CHANNEL_GRAYSCALING = Set.of(new YCbCr601(), new YCbCr709(), new YCoCg());
     private static final Set<ColorSpace> LAST_CHANNEL_GRAYSCALING = Set.of(new HSL(), new HSV());
 
-    private static final float[] MASK_X = {-1, -2, -1,
-                                            0, 0, 0,
-                                            1, 2, 1};
-    private static final float[] MASK_Y = {-1, 0, 1,
+    private static final float[] MASK_X = {-1, 0, 1,
                                             -2, 0, 2,
                                             -1, 0, 1};
+    private static final float[] MASK_Y = {1, 2, 1,
+                                            0, 0, 0,
+                                            -1, -2, -1};
 
     protected GradientCountingFilter(FilterType type) {
         super(type);
