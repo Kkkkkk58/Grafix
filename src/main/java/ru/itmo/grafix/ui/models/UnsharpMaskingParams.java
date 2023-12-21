@@ -1,19 +1,19 @@
 package ru.itmo.grafix.ui.models;
 
 public class UnsharpMaskingParams {
-    public UnsharpMaskingParams(double amount, double radius, int threshold) {
+    public UnsharpMaskingParams(double amount, double sigma, int threshold) {
         this.amount = amount;
-        this.radius = radius;
+        this.sigma = sigma;
         this.threshold = threshold;
     }
 
     private double amount = 0d;
-    private double radius = 0.1;
+    private double sigma = 0.1;
     private int threshold = 0;
 
 
-    public void setRadius(double radius) {
-        this.radius = radius;
+    public void setSigma(double sigma) {
+        this.sigma = sigma;
     }
 
     public void setThreshold(int threshold) {
@@ -27,8 +27,8 @@ public class UnsharpMaskingParams {
         return amount;
     }
 
-    public double getRadius() {
-        return radius;
+    public double getSigma() {
+        return sigma;
     }
 
     public int getThreshold() {

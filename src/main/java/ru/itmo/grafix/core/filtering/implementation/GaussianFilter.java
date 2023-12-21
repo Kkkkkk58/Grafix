@@ -16,6 +16,8 @@ public class GaussianFilter extends ConvolutionalFilter {
 
     public void setSigma(double sigma) {
         this.sigma = sigma;
+        int radius = (int) Math.ceil(3 * sigma);
+        this.setRadius(radius);
     }
 
     public double getSigma() {
@@ -28,11 +30,14 @@ public class GaussianFilter extends ConvolutionalFilter {
         if (s == null) {
             return false;
         }
-        sigma = s;
-        int radius = (int) Math.ceil(3 * sigma);
-        setRadius(radius);
-        initWeightMatrix();
+        setSigma(sigma);
         return true;
+    }
+
+    @Override
+    public void setRadius(int radius) {
+        super.setRadius(radius);
+        initWeightMatrix();
     }
 
     @Override
