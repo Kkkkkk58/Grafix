@@ -30,7 +30,7 @@ public class GaussianFilter extends ConvolutionalFilter {
         if (s == null) {
             return false;
         }
-        setSigma(sigma);
+        setSigma(s);
         return true;
     }
 
