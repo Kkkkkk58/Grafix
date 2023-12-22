@@ -21,7 +21,7 @@ public class SimpleThresholdFilter extends ThresholdFilter {
     }
 
     @Override
-    protected double[] getThresholds() {
+    protected double[] getThresholds(GrafixImage image) {
         return Arrays.stream(thresholdValues).mapToDouble(t -> t / 255.0).toArray();
     }
 }

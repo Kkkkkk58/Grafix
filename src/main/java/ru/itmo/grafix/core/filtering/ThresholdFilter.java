@@ -9,7 +9,7 @@ public abstract class ThresholdFilter extends Filter {
 
     @Override
     public GrafixImage apply(GrafixImage image) {
-        double[] thresholds = getThresholds();
+        double[] thresholds = getThresholds(image);
 
         float[] buffer = new float[image.getTotalChannels() * image.getWidth() * image.getHeight()];
         for (int i = 0; i < buffer.length; ++i) {
@@ -43,5 +43,5 @@ public abstract class ThresholdFilter extends Filter {
         return 0;
     }
 
-    protected abstract double[] getThresholds();
+    protected abstract double[] getThresholds(GrafixImage image);
 }
