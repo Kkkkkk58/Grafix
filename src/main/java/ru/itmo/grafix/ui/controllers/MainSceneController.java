@@ -59,7 +59,7 @@ public class MainSceneController {
     private final List<Scaling> scalingMethods = List.of(new NearestNeighbourScaling(), new BilinearScaling(), new Lanczos3Scaling(),
             new BCsplineScaling());
 
-    private final List<Filter> filterAlgorithms = List.of(new ThresholdFilter(), new ThresholdOtsuFilter(), new MedianFilter(), new GaussianFilter(),
+    private final List<Filter> filterAlgorithms = List.of(new SimpleThresholdFilter(), new OtsuThresholdFilter(), new MedianFilter(), new GaussianFilter(),
             new LinearAveragingFilter(), new UnsharpMaskingFilter(), new ContrastAdaptiveSharpeningFilter(),
             new SobelFilter(), new CannyEdgeDetectorFilter());
     private final ImageProcessorService imageProcessorService;

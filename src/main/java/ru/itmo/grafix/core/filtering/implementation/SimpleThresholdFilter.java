@@ -1,13 +1,15 @@
 package ru.itmo.grafix.core.filtering.implementation;
 
-import ru.itmo.grafix.core.filtering.Filter;
+import java.util.Arrays;
+
 import ru.itmo.grafix.core.filtering.FilterType;
+import ru.itmo.grafix.core.filtering.ThresholdFilter;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.ui.components.dialogs.filters.ThresholdChoiceDialog;
 
-public class ThresholdFilter extends Filter {
+public class SimpleThresholdFilter extends ThresholdFilter {
     private int[] thresholdValues;
-    public ThresholdFilter() {
+    public SimpleThresholdFilter() {
         super(FilterType.THRESHOLD);
     }
 
@@ -19,15 +21,7 @@ public class ThresholdFilter extends Filter {
     }
 
     @Override
-    public GrafixImage apply(GrafixImage image) {
-        return null;
-    }
-
-    public int[] getThresholdValues() {
-        return thresholdValues;
-    }
-
-    public void setThresholdValues(int[] thresholdValues) {
-        this.thresholdValues = thresholdValues;
+    protected double[] getThresholds() {
+        return Arrays.stream(thresholdValues).mapToDouble(t -> t / 255.0).toArray();
     }
 }

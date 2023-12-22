@@ -5,9 +5,9 @@ import ru.itmo.grafix.core.filtering.FilterType;
 import ru.itmo.grafix.core.image.GrafixImage;
 import ru.itmo.grafix.ui.components.dialogs.filters.ThresholdOtsuChoiceDialog;
 
-public class ThresholdOtsuFilter extends Filter {
+public class OtsuThresholdFilter extends Filter {
     private Integer thresholdCount;
-    public ThresholdOtsuFilter() {
+    public OtsuThresholdFilter() {
         super(FilterType.THRESHOLD_OTSU);
     }
 
