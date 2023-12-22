@@ -1,6 +1,5 @@
 package ru.itmo.grafix.core.filtering.implementation;
 
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
 import ru.itmo.grafix.core.autocorrection.ImageHistogramExtractor;
